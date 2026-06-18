@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <defs>
+    <!-- Arco superior para "BARBEARIA" -->
+    <path id="tArc" d="M 58,252 A 192,192 0 0,1 442,252"/>
+    <!-- Arco inferior para "CARVALHO" -->
+    <path id="bArc" d="M 72,272 A 183,183 0 0,0 428,272"/>
+  </defs>
+
+  <!-- Fundo preto -->
+  <circle cx="250" cy="250" r="250" fill="#000"/>
+
+  <!-- Borda externa branca grossa -->
+  <circle cx="250" cy="250" r="238" fill="none" stroke="#fff" stroke-width="14"/>
+
+  <!-- Borda interna branca fina -->
+  <circle cx="250" cy="250" r="213" fill="none" stroke="#fff" stroke-width="4.5"/>
+
+  <!-- ══ TEXTO BARBEARIA (arco superior) ══ -->
+  <text font-family="'Arial Black','Franklin Gothic Heavy',Impact,sans-serif"
+        font-weight="900" font-size="55" fill="#fff" text-anchor="middle" letter-spacing="4">
+    <textPath href="#tArc" startOffset="50%">BARBEARIA</textPath>
+  </text>
+
+  <!-- ══ TEXTO CARVALHO (arco inferior) ══ -->
+  <text font-family="'Arial Black','Franklin Gothic Heavy',Impact,sans-serif"
+        font-weight="900" font-size="55" fill="#fff" text-anchor="middle" letter-spacing="4">
+    <textPath href="#bArc" startOffset="50%">CARVALHO</textPath>
+  </text>
+
+  <!-- ══ PONTOS LATERAIS • ══ -->
+  <circle cx="52"  cy="255" r="9" fill="#fff"/>
+  <circle cx="448" cy="255" r="9" fill="#fff"/>
+
+  <!-- ══ CHAPÉU BOWLER (coco) ══ -->
+  <!-- Copa principal arredondada -->
+  <path d="M 178,205 C 178,155 322,155 322,205 L 322,215 L 178,215 Z" fill="#fff"/>
+  <!-- Topo arredondado da copa -->
+  <ellipse cx="250" cy="165" rx="72" ry="52" fill="#fff"/>
+  <!-- Faixa escura do chapéu -->
+  <rect x="186" y="207" width="128" height="14" rx="2" fill="#1a1a1a"/>
+  <!-- Linha de detalhe superior da faixa -->
+  <rect x="186" y="207" width="128" height="3" rx="1" fill="#333"/>
+  <!-- Aba larga do chapéu -->
+  <ellipse cx="250" cy="219" rx="107" ry="17" fill="#fff"/>
+  <!-- Borda inferior da aba (sombra sutil) -->
+  <ellipse cx="250" cy="222" rx="107" ry="9" fill="rgba(0,0,0,0.3)"/>
+
+  <!-- ══ BIGODE VITORIANO ══ -->
+  <!--
+    Bigode estilo handlebar/vitoriano:
+    - Centro une os dois lados
+    - Cada lado curva para fora e para cima nas pontas com espiral
+  -->
+
+  <!-- Corpo central do bigode -->
+  <path d="M 215,278 Q 230,295 250,293 Q 270,295 285,278"
+        stroke="#fff" stroke-width="20" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Lado ESQUERDO — curva principal -->
+  <path d="M 216,281
+           C 205,279 190,277 175,272
+           C 160,267 148,258 140,252
+           C 133,247 130,240 133,234
+           C 136,228 143,226 150,229
+           C 157,233 159,242 155,249
+           C 151,256 143,258 138,255
+           C 134,252 134,247 137,244
+           C 140,241 145,242 146,246"
+        stroke="#fff" stroke-width="17" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Lado DIREITO — curva principal (espelhada) -->
+  <path d="M 284,281
+           C 295,279 310,277 325,272
+           C 340,267 352,258 360,252
+           C 367,247 370,240 367,234
+           C 364,228 357,226 350,229
+           C 343,233 341,242 345,249
+           C 349,256 357,258 362,255
+           C 366,252 366,247 363,244
+           C 360,241 355,242 354,246"
+        stroke="#fff" stroke-width="17" fill="none"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Bigode mais grosso no centro para dar volume -->
+  <path d="M 220,279 C 232,288 250,291 268,288 C 280,286 287,281 285,279"
+        stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round"/>
+</svg>
