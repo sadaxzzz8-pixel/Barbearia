@@ -638,7 +638,7 @@ footer{
       <div class="s-rule center"></div>
       <p class="s-desc">Profissionais apaixonados pelo ofício, com técnica apurada e atenção em cada detalhe.</p>
     </div>
-    <div class="barbers-grid">
+    <div class="barbers-grid" id="barbersGrid">
       <div class="barber-card reveal reveal-delay-1">
         <div class="barber-top">🧔<div class="barber-badge">01</div></div>
         <div class="barber-body">
@@ -829,6 +829,38 @@ footer{
 <script>
 const API = '';
 let selectedTime = '';
+
+// ── BARBEIROS DINÂMICOS ──
+async function loadBarbers(){
+  try{
+    const r = await fetch(`${API}/api/barbers`);
+    const list = await r.json();
+    const active = list.filter(b => b.active !== false);
+    if(!active.length) return;
+    const grid = document.getElementById('barbersGrid');
+    const delays = ['reveal-delay-1','reveal-delay-2','reveal-delay-3'];
+    grid.innerHTML = active.map((b,i) => `
+      <div class="barber-card reveal ${delays[i%3]||''}">
+        <div class="barber-top">${b.icon||'✂'}<div class="barber-badge">${String(i+1).padStart(2,'0')}</div></div>
+        <div class="barber-body">
+          <div class="barber-name">${b.name}</div>
+          <div class="barber-role">${b.role}</div>
+          <div class="barber-bio">${b.bio}</div>
+          <div class="barber-stars">★★★★★</div>
+        </div>
+      </div>`).join('');
+    // Atualiza select do formulário de agendamento
+    const sel = document.getElementById('bBarber');
+    if(sel){
+      sel.innerHTML = '<option value="">Selecione...</option>' +
+        active.map(b=>`<option value="${b.name}">${b.name}</option>`).join('');
+    }
+    // Reaplica o observer de scroll reveal
+    grid.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  }catch{}
+}
+loadBarbers();
+setInterval(loadBarbers, 15000);
 
 // ── SERVIÇOS DINÂMICOS ──
 async function loadServices(){

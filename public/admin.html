@@ -285,6 +285,26 @@ tr:hover td{background:rgba(255,255,255,.02)}
 }
 .svc-row-header span{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray2)}
 
+/* ── BARBEIROS ── */
+.barber-row{
+  display:grid;
+  grid-template-columns:48px 1fr 1fr 1.8fr 80px 120px;
+  gap:.7rem;align-items:center;
+  padding:.9rem 1.3rem;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:.2s;
+}
+.barber-row:last-child{border-bottom:none}
+.barber-row:hover{background:rgba(255,255,255,.02)}
+.barber-row-header{
+  display:grid;
+  grid-template-columns:48px 1fr 1fr 1.8fr 80px 120px;
+  gap:.7rem;
+  padding:.6rem 1.3rem;
+  background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07);
+}
+.barber-row-header span{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray2)}
+
 /* ── CHAT PREVIEW ── */
 .chat-preview{padding:1.5rem}
 .chat-preview-inner{background:var(--black4);border:1px solid rgba(255,255,255,.07);padding:1.2rem;max-width:400px;display:flex;flex-direction:column;gap:.65rem}
@@ -349,7 +369,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <span class="sidebar-item-icon">▤</span> Agendamentos
         <span class="sidebar-badge" id="apptBadge">0</span>
       </div>
-      <div class="sidebar-group-label">Serviços</div>
+      <div class="sidebar-group-label">Equipe &amp; Serviços</div>
+      <div class="sidebar-item" onclick="switchTab('barbers',this)">
+        <span class="sidebar-item-icon">🧔</span> Barbeiros
+      </div>
       <div class="sidebar-item" onclick="switchTab('services',this)">
         <span class="sidebar-item-icon">✂</span> Serviços &amp; Preços
       </div>
@@ -430,6 +453,50 @@ tr:hover td{background:rgba(255,255,255,.02)}
             <thead><tr><th>Data</th><th>Hora</th><th>Cliente</th><th>Telefone</th><th>Serviço</th><th>Barbeiro</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody id="allBody"><tr><td colspan="8" class="table-empty">Carregando...</td></tr></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BARBERS ── -->
+    <div id="tab-barbers" class="tab-content">
+
+      <!-- Adicionar novo barbeiro -->
+      <div class="card" style="margin-bottom:1.5rem;border-color:rgba(255,255,255,.1)">
+        <div class="card-head">
+          <div class="card-title">＋ Adicionar Novo Barbeiro</div>
+          <div class="saved-pill" id="newBarberPill">✓ Adicionado!</div>
+        </div>
+        <div style="padding:1.4rem;display:grid;grid-template-columns:60px 1fr 1fr auto;gap:.8rem;align-items:end;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Ícone</label>
+            <input class="sg-input" id="nb_icon" type="text" value="✂" style="text-align:center;font-size:1.2rem;padding:.6rem .4rem"/>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Nome Completo</label>
+            <input class="sg-input" id="nb_name" type="text" placeholder="Ex: João Pereira"/>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Cargo / Especialidade</label>
+            <input class="sg-input" id="nb_role" type="text" placeholder="Ex: Barber Especialista"/>
+          </div>
+          <button onclick="addBarber()" style="background:var(--white);color:var(--black);border:none;padding:.72rem 1.2rem;font-weight:900;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;height:fit-content;transition:.2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+            ＋ Adicionar
+          </button>
+          <div class="fg full" style="grid-column:1/-1;display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Bio / Descrição</label>
+            <input class="sg-input" id="nb_bio" type="text" placeholder="Breve descrição sobre o barbeiro..."/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de barbeiros -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🧔 Barbeiros — <span style="color:var(--green);font-size:.75rem;font-weight:600">Ao Vivo no Site</span></div>
+          <div style="font-size:.72rem;color:var(--gray);letter-spacing:.06em">Edite e salve — atualiza o site e o formulário de agendamento</div>
+        </div>
+        <div id="barbersList" style="padding:.5rem 0">
+          <div style="text-align:center;padding:2rem;color:var(--gray2);font-size:.84rem">Carregando...</div>
         </div>
       </div>
     </div>
@@ -608,7 +675,7 @@ document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='
 function boot(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('adminPanel').style.display='block';
-  loadAll(); loadSettings(); loadServicesAdmin();
+  loadAll(); loadSettings(); loadServicesAdmin(); loadBarbersAdmin();
   setInterval(loadAll,15000);
   setInterval(updateTime,1000);
 }
@@ -624,6 +691,7 @@ function logout(){
 const tabMeta = {
   dashboard:    ['Dashboard','Resumo e atividade do dia'],
   appointments: ['Agendamentos','Gerencie e atualize os agendamentos'],
+  barbers:      ['Barbeiros','Gerencie a equipe — ao vivo no site e no formulário de agendamento'],
   services:     ['Serviços & Preços','Edite nomes, valores e descrições — ao vivo no site'],
   settings:     ['Informações do Site','Edite e veja aplicado em tempo real'],
   gemini:       ['Chat IA — Gemini','Configure o assistente virtual']
@@ -637,6 +705,7 @@ function switchTab(name, el){
   document.getElementById('pageTitle').textContent = t;
   document.getElementById('pageSub').textContent   = s;
   if(name === 'services') loadServicesAdmin();
+  if(name === 'barbers')  loadBarbersAdmin();
 }
 
 // ── TIME ──
@@ -760,6 +829,159 @@ async function saveSettings(){
     if(r.ok){pill.classList.add('show');setTimeout(()=>pill.classList.remove('show'),3500);showToast('⚡ Aplicado no site agora!');}
   }catch{showToast('Sem conexão (modo demo)');}
   btn.disabled=false; btn.textContent='Salvar e Aplicar';
+}
+
+// ══════════════════════════════════════
+// ── BARBEIROS ──
+// ══════════════════════════════════════
+let barbersData = [];
+
+async function loadBarbersAdmin(){
+  try{
+    const r = await fetch(`${API}/api/barbers`);
+    barbersData = await r.json();
+    renderBarbersList();
+  }catch{
+    document.getElementById('barbersList').innerHTML =
+      '<div style="text-align:center;padding:2rem;color:var(--gray2)">Erro ao carregar barbeiros</div>';
+  }
+}
+
+function renderBarbersList(){
+  const el = document.getElementById('barbersList');
+  if(!barbersData.length){
+    el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray2)">Nenhum barbeiro cadastrado</div>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="barber-row-header">
+      <span>Ícone</span><span>Nome</span><span>Cargo</span>
+      <span>Bio</span>
+      <span style="text-align:center">Status</span>
+      <span style="text-align:center">Ações</span>
+    </div>
+    ${barbersData.map(b => `
+      <div class="barber-row" id="brow-${b.id}">
+        <!-- Ícone -->
+        <div>
+          <div class="svc-icon-cell" title="Clique para editar"
+            onclick="editBarberIcon('${b.id}')" id="bicon-${b.id}">${b.icon||'✂'}</div>
+          <input type="hidden" id="bi_icon_${b.id}" value="${b.icon||'✂'}"/>
+        </div>
+        <!-- Nome -->
+        <input class="svc-inp" id="bi_name_${b.id}" value="${escB(b.name)}" placeholder="Nome"/>
+        <!-- Cargo -->
+        <input class="svc-inp" id="bi_role_${b.id}" value="${escB(b.role||'')}" placeholder="Cargo"/>
+        <!-- Bio -->
+        <input class="svc-inp" id="bi_bio_${b.id}" value="${escB(b.bio||'')}" placeholder="Bio"/>
+        <!-- Toggle -->
+        <button class="svc-toggle ${b.active!==false?'on':'off'}" id="btog-${b.id}"
+          onclick="toggleBarber('${b.id}')">
+          ${b.active!==false ? '● Ativo' : '○ Inativo'}
+        </button>
+        <!-- Ações -->
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <button class="svc-save-btn" onclick="saveBarber('${b.id}')">💾 Salvar</button>
+          <div class="svc-saved" id="bsaved-${b.id}">✓ Salvo!</div>
+          <button class="svc-del-btn" onclick="deleteBarber('${b.id}')">🗑 Excluir</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function escB(str){ return String(str).replace(/"/g,'&quot;').replace(/</g,'&lt;') }
+
+function editBarberIcon(id){
+  const cur = document.getElementById(`bi_icon_${id}`).value;
+  const nw  = prompt('Cole o emoji do barbeiro:', cur);
+  if(nw && nw.trim()){
+    document.getElementById(`bi_icon_${id}`).value = nw.trim();
+    document.getElementById(`bicon-${id}`).textContent = nw.trim();
+  }
+}
+
+async function saveBarber(id){
+  const payload = {
+    name: document.getElementById(`bi_name_${id}`).value,
+    role: document.getElementById(`bi_role_${id}`).value,
+    bio:  document.getElementById(`bi_bio_${id}`).value,
+    icon: document.getElementById(`bi_icon_${id}`).value,
+  };
+  try{
+    const r = await fetch(`${API}/api/barbers/${id}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify(payload)
+    });
+    if(r.ok){
+      const sv = document.getElementById(`bsaved-${id}`);
+      sv.style.display='block';
+      setTimeout(()=>sv.style.display='none',2500);
+      const b = barbersData.find(x=>x.id===id);
+      if(b) Object.assign(b, payload);
+      showToast('✓ Barbeiro salvo ao vivo!');
+    }
+  }catch{ showToast('Erro ao salvar'); }
+}
+
+async function toggleBarber(id){
+  const b = barbersData.find(x=>x.id===id);
+  if(!b) return;
+  const newActive = !(b.active !== false);
+  try{
+    await fetch(`${API}/api/barbers/${id}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify({active: newActive})
+    });
+    b.active = newActive;
+    const btn = document.getElementById(`btog-${id}`);
+    btn.className = `svc-toggle ${newActive?'on':'off'}`;
+    btn.textContent = newActive ? '● Ativo' : '○ Inativo';
+    showToast(newActive ? '✅ Barbeiro ativado no site!' : '⏸ Barbeiro desativado no site!');
+  }catch{ showToast('Erro ao atualizar status'); }
+}
+
+async function deleteBarber(id){
+  const b = barbersData.find(x=>x.id===id);
+  if(!confirm(`Excluir "${b?.name}"? Ele também será removido do formulário de agendamento.`)) return;
+  try{
+    const r = await fetch(`${API}/api/barbers/${id}`,{
+      method:'DELETE',
+      headers:{'x-admin-token':token}
+    });
+    if(r.ok){
+      barbersData = barbersData.filter(x=>x.id!==id);
+      renderBarbersList();
+      showToast('🗑 Barbeiro excluído');
+    }
+  }catch{ showToast('Erro ao excluir'); }
+}
+
+async function addBarber(){
+  const name = document.getElementById('nb_name').value.trim();
+  const role = document.getElementById('nb_role').value.trim();
+  const bio  = document.getElementById('nb_bio').value.trim();
+  const icon = document.getElementById('nb_icon').value.trim() || '✂';
+  if(!name){ showToast('⚠ Preencha o nome do barbeiro'); return; }
+  try{
+    const r = await fetch(`${API}/api/barbers`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify({name, role, bio, icon})
+    });
+    const d = await r.json();
+    if(r.ok){
+      barbersData.push(d.barber);
+      renderBarbersList();
+      ['nb_name','nb_role','nb_bio'].forEach(i=>document.getElementById(i).value='');
+      document.getElementById('nb_icon').value='✂';
+      const pill = document.getElementById('newBarberPill');
+      pill.classList.add('show'); setTimeout(()=>pill.classList.remove('show'),3000);
+      showToast('✅ Barbeiro adicionado ao site!');
+    }
+  }catch{ showToast('Erro ao adicionar barbeiro'); }
 }
 
 // ══════════════════════════════════════

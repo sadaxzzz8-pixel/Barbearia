@@ -99,6 +99,43 @@ app.get('/api/available-slots', (req, res) => {
   res.json(allSlots.filter(s => !booked.includes(s)));
 });
 
+// ─── LISTAR BARBEIROS (público) ───────────────────────────
+app.get('/api/barbers', (req, res) => {
+  res.json(db.barbers);
+});
+
+// ─── ATUALIZAR BARBEIRO (admin) ───────────────────────────
+app.put('/api/barbers/:id', requireAdmin, (req, res) => {
+  const b = db.barbers.find(x => x.id === req.params.id);
+  if (!b) return res.status(404).json({ error: 'Barbeiro não encontrado' });
+  const allowed = ['name', 'role', 'bio', 'icon', 'active'];
+  for (const k of allowed) {
+    if (req.body[k] !== undefined) b[k] = req.body[k];
+  }
+  res.json({ success: true, barber: b });
+});
+
+// ─── CRIAR BARBEIRO (admin) ───────────────────────────────
+app.post('/api/barbers', requireAdmin, (req, res) => {
+  const { name, role, bio, icon } = req.body;
+  if (!name) return res.status(400).json({ error: 'Nome obrigatório' });
+  const b = {
+    id: Date.now().toString(),
+    name, role: role || '', bio: bio || '',
+    icon: icon || '✂', active: true
+  };
+  db.barbers.push(b);
+  res.status(201).json({ success: true, barber: b });
+});
+
+// ─── DELETAR BARBEIRO (admin) ─────────────────────────────
+app.delete('/api/barbers/:id', requireAdmin, (req, res) => {
+  const idx = db.barbers.findIndex(x => x.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Barbeiro não encontrado' });
+  db.barbers.splice(idx, 1);
+  res.json({ success: true });
+});
+
 // ─── LISTAR SERVIÇOS (público) ────────────────────────────
 app.get('/api/services', (req, res) => {
   res.json(db.services);

@@ -14,6 +14,13 @@ const db = {
     heroSubtitle: "Barbearia Carvalho — Onde o clássico encontra o moderno"
   },
 
+  // ── Barbeiros editáveis pelo admin ────────────────────────
+  barbers: [
+    { id: "1", name: "Carlos Carvalho", role: "Fundador · Master Barber", bio: "Com mais de 10 anos de experiência, Carlos é especialista em cortes clássicos e técnicas modernas. Fundou a barbearia com paixão pelo ofício.", icon: "🧔", active: true },
+    { id: "2", name: "Rafael Silva",    role: "Barber Especialista",      bio: "Referência em barbas e acabamentos perfeitos. O trabalho do Rafael com navalha é impecável — seus clientes sempre saem mais do que satisfeitos.", icon: "💈", active: true },
+    { id: "3", name: "Miguel Santos",   role: "Barber · Colorista",       bio: "Especialista em pigmentação e relaxamento capilar. Miguel traz tendências internacionais para cada atendimento, sempre atualizado nas novidades.", icon: "✂",  active: true },
+  ],
+
   // ── Serviços editáveis pelo admin ──────────────────────────
   services: [
     { id: "1", name: "Corte Masculino", desc: "Corte personalizado ao seu estilo com acabamento impecável e técnicas modernas.", price: "45", duration: "45 min",  icon: "✂",  active: true },
