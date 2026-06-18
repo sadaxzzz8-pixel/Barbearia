@@ -108,7 +108,7 @@ app.post('/api/admin/login', (req, res) => {
 
 // ─── CHAT GEMINI ──────────────────────────────────────────
 // 🔑 Coloque sua API Key abaixo OU use variável de ambiente GEMINI_API_KEY
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'SUA_API_KEY_AQUI';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6LLCJeUObENMaWQM-qLg2K-fR8IknZ0Dr-q093rDcEDaw';
 
 app.post('/api/chat', async (req, res) => {
   const { message, history } = req.body;
