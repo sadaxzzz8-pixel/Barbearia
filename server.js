@@ -107,39 +107,26 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════
-// 🔑 GEMINI API KEY
+// 🔑 GEMINI API KEY — Cole a sua chave aqui
+// Obtenha em: https://aistudio.google.com/app/apikey
 // ════════════════════════════════════════════════════════════
-// Para obter sua chave gratuita:
-//   1. Acesse: https://aistudio.google.com/app/apikey
-//   2. Clique em "Create API key"
-//   3. Copie a chave (começa com "AIza...")
-//   4. Cole abaixo substituindo COLE_SUA_API_KEY_AQUI
-//
-// ⚠️  NÃO use chaves OAuth (que começam com "AQ." ou "ya29.")
-//     Essas são para outros produtos Google, não para o Gemini API.
-//
-// Alternativa: GEMINI_API_KEY=AIzaSy... node server.js
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6LLCJeUObENMaWQM-qLg2K-fR8IknZ0Dr-q093rDcEDaw';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6ImkBDuUhbtcuVHbZAoLs7UOBaNPbtoMDD9D9mtN8xt9Q';
 
-// Modelo gemini-2.0-flash — rápido, gratuito e preciso
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+// Lista de modelos em ordem de preferência — tenta o próximo se der quota esgotada
+const GEMINI_MODELS = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-001',
+];
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 app.post('/api/chat', async (req, res) => {
   const { message, history } = req.body;
   if (!message) return res.status(400).json({ error: 'Mensagem obrigatória' });
 
-  // Verifica se a key foi configurada
-  if (!GEMINI_API_KEY || GEMINI_API_KEY === 'COLE_SUA_API_KEY_AQUI') {
-    return res.status(503).json({
-      error: 'API Key não configurada',
-      hint: 'Obtenha sua chave gratuita em https://aistudio.google.com/app/apikey e cole em server.js'
-    });
-  }
+  const { default: fetch } = await import('node-fetch');
 
-  try {
-    const { default: fetch } = await import('node-fetch');
-
-    const systemPrompt = `Você é o assistente virtual da Barbearia Carvalho.
+  const systemPrompt = `Você é o assistente virtual da Barbearia Carvalho.
 Informações da barbearia: ${JSON.stringify(db.settings)}.
 Serviços disponíveis:
 - Corte Masculino: R$45 (45 min)
@@ -152,46 +139,62 @@ Barbeiros: Carlos Carvalho, Rafael Silva, Miguel Santos.
 Responda sempre em português brasileiro, de forma amigável, simpática e profissional.
 Seja conciso. Ajude com serviços, preços, agendamentos e informações da barbearia.`;
 
-    // Monta o array de contents com histórico + instrução de sistema no início
-    const contents = [];
-
-    // Insere o system prompt como primeira mensagem do "model" (compatível com gemini-flash-latest)
-    if (Array.isArray(history) && history.length > 0) {
-      for (const h of history) {
-        contents.push({ role: h.role, parts: [{ text: h.text }] });
-      }
-    }
-    contents.push({ role: 'user', parts: [{ text: message }] });
-
-    const payload = {
-      system_instruction: {
-        parts: [{ text: systemPrompt }]
-      },
-      contents
-    };
-
-    // Usa X-goog-api-key no header, igual ao curl fornecido
-    const response = await fetch(GEMINI_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-goog-api-key': GEMINI_API_KEY
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      res.json({ reply: data.candidates[0].content.parts[0].text });
-    } else {
-      console.error('Gemini resposta inesperada:', JSON.stringify(data, null, 2));
-      res.status(500).json({ error: 'Sem resposta da IA', detail: data });
-    }
-  } catch (err) {
-    console.error('Erro Gemini:', err);
-    res.status(500).json({ error: 'Erro interno ao conectar com a IA' });
+  const contents = [];
+  if (Array.isArray(history) && history.length > 0) {
+    for (const h of history)
+      contents.push({ role: h.role, parts: [{ text: h.text }] });
   }
+  contents.push({ role: 'user', parts: [{ text: message }] });
+
+  const payload = {
+    system_instruction: { parts: [{ text: systemPrompt }] },
+    contents
+  };
+
+  // Tenta cada modelo até um funcionar (lida com quota esgotada automaticamente)
+  let lastError = null;
+  for (const model of GEMINI_MODELS) {
+    try {
+      const url = `${GEMINI_BASE}/${model}:generateContent?key=${GEMINI_API_KEY}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      // Sucesso
+      if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        console.log(`✅ Gemini respondeu via ${model}`);
+        return res.json({ reply: data.candidates[0].content.parts[0].text });
+      }
+
+      // Quota esgotada — tenta próximo modelo
+      if (data.error?.code === 429 || data.error?.status === 'RESOURCE_EXHAUSTED') {
+        console.warn(`⚠️  Quota esgotada em ${model}, tentando próximo...`);
+        lastError = data.error;
+        continue;
+      }
+
+      // Outro erro — loga e tenta próximo
+      console.warn(`⚠️  Erro em ${model}:`, data.error?.status, data.error?.message?.slice(0, 80));
+      lastError = data.error;
+      continue;
+
+    } catch (err) {
+      console.error(`Erro de rede em ${model}:`, err.message);
+      lastError = err;
+      continue;
+    }
+  }
+
+  // Todos os modelos falharam
+  console.error('❌ Todos os modelos Gemini falharam. Último erro:', lastError);
+  res.status(429).json({
+    error: 'quota_esgotada',
+    message: 'Limite diário da IA atingido. Tente novamente amanhã ou contate pelo WhatsApp.'
+  });
 });
 
 // ─── SPA FALLBACK ─────────────────────────────────────────
