@@ -110,7 +110,7 @@ app.post('/api/admin/login', (req, res) => {
 // 🔑 GEMINI API KEY — Cole a sua chave aqui
 // Obtenha em: https://aistudio.google.com/app/apikey
 // ════════════════════════════════════════════════════════════
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6ImkBDuUhbtcuVHbZAoLs7UOBaNPbtoMDD9D9mtN8xt9Q';
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6KWRlYpmSuc8T4s15V9bOCNT0TldVPlNZXeu1GZV3GMoA';
 
 // Lista de modelos em ordem de preferência — tenta o próximo se der quota esgotada
 const GEMINI_MODELS = [
