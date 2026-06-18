@@ -107,12 +107,26 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // ════════════════════════════════════════════════════════════
-// 🔑 GEMINI API KEY — Cole a sua chave aqui
-// Obtenha em: https://aistudio.google.com/app/apikey
+// 🔑 GEMINI API KEY — COLE SUA CHAVE PERMANENTE AQUI
 // ════════════════════════════════════════════════════════════
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6KWRlYpmSuc8T4s15V9bOCNT0TldVPlNZXeu1GZV3GMoA';
+//
+//  ✅ COMO PEGAR A CHAVE PERMANENTE (AIzaSy...):
+//
+//  1. Abra: https://aistudio.google.com/app/apikey
+//  2. Clique em "Get API key" → "Create API key in new project"
+//  3. A chave gerada começa com "AIzaSy" e NÃO expira
+//  4. Cole ela abaixo
+//
+//  ❌ NÃO use as chaves "AQ.Ab8..." que aparecem no canto superior
+//     direito do AI Studio — essas são tokens OAuth temporários
+//     que expiram em 1 hora e NÃO funcionam aqui.
+//
+//  💡 DICA: Na página do AI Studio, procure o botão azul
+//     "Create API key" — NÃO o botão de copiar no topo da página.
+//
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'COLE_AQUI_AIzaSy...';
 
-// Lista de modelos em ordem de preferência — tenta o próximo se der quota esgotada
+// Modelos em ordem de preferência (fallback automático se quota acabar)
 const GEMINI_MODELS = [
   'gemini-2.0-flash',
   'gemini-2.0-flash-lite',
@@ -120,24 +134,39 @@ const GEMINI_MODELS = [
 ];
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
+// ─── ATUALIZAR KEY VIA ADMIN (sem reiniciar servidor) ─────
+// Permite trocar a API Key pelo painel admin em tempo real
+app.post('/api/admin/gemini-key', requireAdmin, (req, res) => {
+  const { apiKey } = req.body;
+  if (!apiKey || apiKey.length < 10)
+    return res.status(400).json({ error: 'Chave inválida' });
+  // Atualiza em memória (reiniciar o servidor zera; edite o arquivo para persistir)
+  db.geminiKey = apiKey;
+  res.json({ success: true, message: 'API Key atualizada! Teste o chat agora.' });
+});
+
+// ─── CHAT GEMINI ──────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   const { message, history } = req.body;
   if (!message) return res.status(400).json({ error: 'Mensagem obrigatória' });
 
+  // Pega a key — prioridade: admin atualizado > env > arquivo
+  const activeKey = db.geminiKey || GEMINI_API_KEY;
+
+  if (!activeKey || activeKey.includes('COLE_AQUI')) {
+    return res.status(503).json({
+      error: 'sem_key',
+      message: 'API Key não configurada. Cole sua chave AIzaSy... no server.js'
+    });
+  }
+
   const { default: fetch } = await import('node-fetch');
 
   const systemPrompt = `Você é o assistente virtual da Barbearia Carvalho.
-Informações da barbearia: ${JSON.stringify(db.settings)}.
-Serviços disponíveis:
-- Corte Masculino: R$45 (45 min)
-- Barba: R$35 (30 min)
-- Corte + Barba: R$70 (1h15)
-- Pigmentação: R$60 (1h)
-- Relaxamento: R$80 (1h30)
-- Sobrancelha: R$20 (15 min)
+Informações: ${JSON.stringify(db.settings)}.
+Serviços: Corte Masculino R$45 (45min), Barba R$35 (30min), Corte+Barba R$70 (1h15), Pigmentação R$60 (1h), Relaxamento R$80 (1h30), Sobrancelha R$20 (15min).
 Barbeiros: Carlos Carvalho, Rafael Silva, Miguel Santos.
-Responda sempre em português brasileiro, de forma amigável, simpática e profissional.
-Seja conciso. Ajude com serviços, preços, agendamentos e informações da barbearia.`;
+Responda em português brasileiro, de forma amigável e concisa.`;
 
   const contents = [];
   if (Array.isArray(history) && history.length > 0) {
@@ -148,14 +177,14 @@ Seja conciso. Ajude com serviços, preços, agendamentos e informações da barb
 
   const payload = {
     system_instruction: { parts: [{ text: systemPrompt }] },
-    contents
+    contents,
+    generationConfig: { maxOutputTokens: 512, temperature: 0.7 }
   };
 
-  // Tenta cada modelo até um funcionar (lida com quota esgotada automaticamente)
-  let lastError = null;
+  // Tenta cada modelo — fallback automático se quota acabar
   for (const model of GEMINI_MODELS) {
     try {
-      const url = `${GEMINI_BASE}/${model}:generateContent?key=${GEMINI_API_KEY}`;
+      const url = `${GEMINI_BASE}/${model}:generateContent?key=${activeKey}`;
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -164,36 +193,44 @@ Seja conciso. Ajude com serviços, preços, agendamentos e informações da barb
 
       const data = await response.json();
 
-      // Sucesso
+      // ✅ Sucesso
       if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-        console.log(`✅ Gemini respondeu via ${model}`);
+        console.log(`✅ Gemini OK [${model}]`);
         return res.json({ reply: data.candidates[0].content.parts[0].text });
       }
 
+      const errStatus = data.error?.status;
+      const errCode   = data.error?.code;
+
+      // Chave inválida / expirada
+      if (errCode === 400 || errCode === 401 || errStatus === 'UNAUTHENTICATED' || errStatus === 'INVALID_ARGUMENT') {
+        console.error(`❌ Chave inválida/expirada. Use uma chave AIzaSy... permanente.`);
+        return res.status(401).json({
+          error: 'key_invalida',
+          message: 'Chave Gemini inválida ou expirada. Gere uma nova chave AIzaSy... em aistudio.google.com/app/apikey'
+        });
+      }
+
       // Quota esgotada — tenta próximo modelo
-      if (data.error?.code === 429 || data.error?.status === 'RESOURCE_EXHAUSTED') {
-        console.warn(`⚠️  Quota esgotada em ${model}, tentando próximo...`);
-        lastError = data.error;
+      if (errCode === 429 || errStatus === 'RESOURCE_EXHAUSTED') {
+        console.warn(`⚠️  Quota esgotada [${model}], tentando próximo...`);
         continue;
       }
 
-      // Outro erro — loga e tenta próximo
-      console.warn(`⚠️  Erro em ${model}:`, data.error?.status, data.error?.message?.slice(0, 80));
-      lastError = data.error;
+      // Outro erro
+      console.warn(`⚠️  Erro [${model}]:`, errStatus, data.error?.message?.slice(0, 80));
       continue;
 
     } catch (err) {
-      console.error(`Erro de rede em ${model}:`, err.message);
-      lastError = err;
+      console.error(`Erro de rede [${model}]:`, err.message);
       continue;
     }
   }
 
-  // Todos os modelos falharam
-  console.error('❌ Todos os modelos Gemini falharam. Último erro:', lastError);
-  res.status(429).json({
+  // Todos os modelos com quota esgotada
+  return res.status(429).json({
     error: 'quota_esgotada',
-    message: 'Limite diário da IA atingido. Tente novamente amanhã ou contate pelo WhatsApp.'
+    message: 'Limite diário da IA atingido. Tente novamente mais tarde.'
   });
 });
 
@@ -203,7 +240,13 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
+  const keyOk = (db.geminiKey || GEMINI_API_KEY || '').startsWith('AIza');
   console.log(`\n✅  Barbearia Carvalho → http://localhost:${PORT}`);
   console.log(`🔑  Senha admin: ${db.adminPassword}`);
-  console.log(`💬  Chat IA: defina GEMINI_API_KEY em server.js ou como variável de ambiente\n`);
+  console.log(keyOk
+    ? `🤖  Gemini IA: ✅ Chave configurada (AIzaSy...)`
+    : `🤖  Gemini IA: ❌ Chave NÃO configurada! Leia as instruções no server.js`
+  );
+  console.log(`\n📋  Para configurar a IA sem reiniciar:`);
+  console.log(`    POST /api/admin/gemini-key  { "apiKey": "AIzaSy..." }\n`);
 });

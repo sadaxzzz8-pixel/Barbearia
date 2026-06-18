@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Fundo preto redondo -->
+  <circle cx="50" cy="50" r="50" fill="#000"/>
+  <!-- Borda branca externa -->
+  <circle cx="50" cy="50" r="46" fill="none" stroke="#fff" stroke-width="3.5"/>
+  <!-- Círculo interno tracejado -->
+  <circle cx="50" cy="50" r="37" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="2.2 2.8"/>
+  <!-- Chapéu coco: aba -->
+  <rect x="27" y="40" width="46" height="4.5" rx="2" fill="#fff"/>
+  <!-- Chapéu coco: copa -->
+  <rect x="34" y="26" width="32" height="15" rx="3" fill="#fff"/>
+  <!-- Chapéu coco: topo arredondado -->
+  <ellipse cx="50" cy="26" rx="16" ry="3.5" fill="#fff"/>
+  <!-- Bigode esquerdo -->
+  <path d="M26 66 Q32 57 40 61 Q45 64 50 63.5" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bigode direito -->
+  <path d="M74 66 Q68 57 60 61 Q55 64 50 63.5" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bolinhas separadoras -->
+  <circle cx="14" cy="53" r="2.5" fill="#fff"/>
+  <circle cx="86" cy="53" r="2.5" fill="#fff"/>
+</svg>
