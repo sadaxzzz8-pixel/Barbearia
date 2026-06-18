@@ -106,18 +106,40 @@ app.post('/api/admin/login', (req, res) => {
   res.status(401).json({ error: 'Senha incorreta' });
 });
 
-// ─── CHAT GEMINI ──────────────────────────────────────────
-// 🔑 Coloque sua API Key abaixo OU use variável de ambiente GEMINI_API_KEY
+// ════════════════════════════════════════════════════════════
+// 🔑 GEMINI API KEY
+// ════════════════════════════════════════════════════════════
+// Para obter sua chave gratuita:
+//   1. Acesse: https://aistudio.google.com/app/apikey
+//   2. Clique em "Create API key"
+//   3. Copie a chave (começa com "AIza...")
+//   4. Cole abaixo substituindo COLE_SUA_API_KEY_AQUI
+//
+// ⚠️  NÃO use chaves OAuth (que começam com "AQ." ou "ya29.")
+//     Essas são para outros produtos Google, não para o Gemini API.
+//
+// Alternativa: GEMINI_API_KEY=AIzaSy... node server.js
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AQ.Ab8RN6LLCJeUObENMaWQM-qLg2K-fR8IknZ0Dr-q093rDcEDaw';
+
+// Modelo gemini-2.0-flash — rápido, gratuito e preciso
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 app.post('/api/chat', async (req, res) => {
   const { message, history } = req.body;
   if (!message) return res.status(400).json({ error: 'Mensagem obrigatória' });
 
+  // Verifica se a key foi configurada
+  if (!GEMINI_API_KEY || GEMINI_API_KEY === 'COLE_SUA_API_KEY_AQUI') {
+    return res.status(503).json({
+      error: 'API Key não configurada',
+      hint: 'Obtenha sua chave gratuita em https://aistudio.google.com/app/apikey e cole em server.js'
+    });
+  }
+
   try {
     const { default: fetch } = await import('node-fetch');
 
-    const systemContext = `Você é o assistente virtual da Barbearia Carvalho.
+    const systemPrompt = `Você é o assistente virtual da Barbearia Carvalho.
 Informações da barbearia: ${JSON.stringify(db.settings)}.
 Serviços disponíveis:
 - Corte Masculino: R$45 (45 min)
@@ -130,27 +152,40 @@ Barbeiros: Carlos Carvalho, Rafael Silva, Miguel Santos.
 Responda sempre em português brasileiro, de forma amigável, simpática e profissional.
 Seja conciso. Ajude com serviços, preços, agendamentos e informações da barbearia.`;
 
+    // Monta o array de contents com histórico + instrução de sistema no início
     const contents = [];
-    if (Array.isArray(history)) {
-      for (const h of history)
+
+    // Insere o system prompt como primeira mensagem do "model" (compatível com gemini-flash-latest)
+    if (Array.isArray(history) && history.length > 0) {
+      for (const h of history) {
         contents.push({ role: h.role, parts: [{ text: h.text }] });
+      }
     }
     contents.push({ role: 'user', parts: [{ text: message }] });
 
     const payload = {
-      system_instruction: { parts: [{ text: systemContext }] },
+      system_instruction: {
+        parts: [{ text: systemPrompt }]
+      },
       contents
     };
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }
-    );
+    // Usa X-goog-api-key no header, igual ao curl fornecido
+    const response = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-goog-api-key': GEMINI_API_KEY
+      },
+      body: JSON.stringify(payload)
+    });
 
     const data = await response.json();
+
     if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
       res.json({ reply: data.candidates[0].content.parts[0].text });
     } else {
+      console.error('Gemini resposta inesperada:', JSON.stringify(data, null, 2));
       res.status(500).json({ error: 'Sem resposta da IA', detail: data });
     }
   } catch (err) {
