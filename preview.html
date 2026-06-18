@@ -911,7 +911,7 @@ footer{
         <p id="aboutText">A Barbearia Carvalho é referência em estilo e tradição. Com mais de 10 anos de experiência, nossos barbeiros são especialistas em cortes modernos e clássicos, sempre com o máximo cuidado e precisão.</p>
         <div class="contact-list">
           <div class="contact-row"><div class="contact-row-icon">📞</div><div><div class="contact-row-label">Telefone</div><div class="contact-row-val" id="cPhone">(11) 99999-9999</div></div></div>
-          <div class="contact-row"><div class="contact-row-icon">📧</div><div><div class="contact-row-label">E-mail</div><div class="contact-row-val" id="cEmail">contato@barbearia-carvalho.com</div></div></div>
+          <div class="contact-row"><div class="contact-row-icon">📧</div><div><div class="contact-row-label">E-mail</div><div class="contact-row-val" id="cEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c7a4a8a9b3a6b3a887a5a6b5a5a2a6b5aea6eaa4a6b5b1a6abafa8e9a4a8aa">[email&#160;protected]</a></div></div></div>
           <div class="contact-row"><div class="contact-row-icon">📸</div><div><div class="contact-row-label">Instagram</div><div class="contact-row-val" id="cInstagram">@barbearia.carvalho</div></div></div>
           <div class="contact-row"><div class="contact-row-icon">📍</div><div><div class="contact-row-label">Endereço</div><div class="contact-row-val" id="cAddress">Rua das Barbearias, 123 — São Paulo, SP</div></div></div>
           <div class="contact-row"><div class="contact-row-icon">🕐</div><div><div class="contact-row-label">Horário</div><div class="contact-row-val" id="cHours">Seg-Sex: 9h às 20h · Sáb: 8h às 18h</div></div></div>
@@ -991,7 +991,7 @@ footer{
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const API = '';
 let selectedTime = '';
 let chatOpen = false;
@@ -1113,15 +1113,24 @@ async function sendChat(){
   chatHistory.push({role:'user',text:msg});
   const t = addTyping();
   try{
-    const r = await fetch(`${API}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,history:chatHistory.slice(-10)})});
+    const r = await fetch(`${API}/api/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:msg, history:chatHistory.slice(-10)})
+    });
     const d = await r.json();
     t.remove();
-    const reply = d.reply || 'Desculpe, não consegui processar sua mensagem.';
-    addMsg(reply,'bot');
-    chatHistory.push({role:'model',text:reply});
-  }catch{
+    if(r.ok && d.reply){
+      addMsg(d.reply,'bot');
+      chatHistory.push({role:'model',text:d.reply});
+    } else if(r.status === 503){
+      addMsg('🔑 O chat IA ainda não está configurado. Para ativá-lo, obtenha uma API Key gratuita em <strong>aistudio.google.com</strong> e cole no <code>server.js</code>.\n\nEnquanto isso, fale conosco pelo WhatsApp: <strong>'+(document.getElementById('cPhone').textContent)+'</strong>','bot');
+    } else {
+      addMsg('Desculpe, ocorreu um erro. Tente novamente ou entre em contato: '+(document.getElementById('cPhone').textContent),'bot');
+    }
+  }catch(err){
     t.remove();
-    addMsg('Para ativar o chat IA, configure sua chave Gemini no server.js. Enquanto isso, ligue: '+(document.getElementById('cPhone').textContent),'bot');
+    addMsg('⚠️ Não foi possível conectar ao assistente. Entre em contato pelo WhatsApp: <strong>'+(document.getElementById('cPhone').textContent)+'</strong>','bot');
   }
 }
 
@@ -1141,5 +1150,5 @@ function addTyping(){
   body.appendChild(div); body.scrollTop = body.scrollHeight; return div;
 }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0d6910509530061',t:'MTc4MTc0NjYyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
