@@ -231,6 +231,60 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .step code{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:.1rem .4rem;font-size:.78rem;font-family:monospace}
 .gemini-tip{background:rgba(107,255,107,.04);border:1px solid rgba(107,255,107,.15);padding:.9rem 1.1rem;font-size:.83rem;color:rgba(255,255,255,.75);line-height:1.6}
 
+/* ── SERVIÇOS LIST ── */
+.svc-row{
+  display:grid;
+  grid-template-columns:48px 1fr 1.6fr 100px 100px 90px 120px;
+  gap:.7rem;align-items:center;
+  padding:.9rem 1.3rem;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:.2s;
+}
+.svc-row:last-child{border-bottom:none}
+.svc-row:hover{background:rgba(255,255,255,.02)}
+.svc-icon-cell{
+  width:40px;height:40px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  cursor:pointer;transition:.2s;
+}
+.svc-icon-cell:hover{border-color:rgba(255,255,255,.3)}
+.svc-inp{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  padding:.5rem .7rem;color:var(--white);font-size:.82rem;
+  outline:none;transition:.2s;width:100%;font-family:inherit;
+}
+.svc-inp:focus{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.05)}
+.svc-price-inp{font-size:.95rem;font-weight:700;text-align:center}
+.svc-save-btn{
+  background:var(--white);color:var(--black);border:none;
+  padding:.5rem .9rem;font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;transition:.2s;width:100%;font-family:inherit;
+}
+.svc-save-btn:hover{opacity:.8}
+.svc-saved{color:var(--green);font-size:.72rem;font-weight:700;letter-spacing:.08em;display:none;text-align:center}
+.svc-toggle{
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+  font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:.4rem .7rem;border:1px solid;transition:.2s;
+}
+.svc-toggle.on{border-color:rgba(107,255,107,.3);color:var(--green);background:rgba(107,255,107,.06)}
+.svc-toggle.off{border-color:rgba(255,107,107,.25);color:var(--red);background:rgba(255,107,107,.05)}
+.svc-del-btn{
+  background:transparent;border:1px solid rgba(255,107,107,.2);color:var(--red);
+  padding:.5rem .8rem;font-size:.72rem;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;
+  letter-spacing:.06em;text-transform:uppercase;width:100%;
+}
+.svc-del-btn:hover{background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
+.svc-row-header{
+  display:grid;
+  grid-template-columns:48px 1fr 1.6fr 100px 100px 90px 120px;
+  gap:.7rem;
+  padding:.6rem 1.3rem;
+  background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07);
+}
+.svc-row-header span{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray2)}
+
 /* ── CHAT PREVIEW ── */
 .chat-preview{padding:1.5rem}
 .chat-preview-inner{background:var(--black4);border:1px solid rgba(255,255,255,.07);padding:1.2rem;max-width:400px;display:flex;flex-direction:column;gap:.65rem}
@@ -338,6 +392,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <span class="sidebar-item-icon">▤</span> Agendamentos
         <span class="sidebar-badge" id="apptBadge">0</span>
       </div>
+      <div class="sidebar-group-label">Serviços</div>
+      <div class="sidebar-item" onclick="switchTab('services',this)">
+        <span class="sidebar-item-icon">✂</span> Serviços &amp; Preços
+      </div>
       <div class="sidebar-group-label">Configurações</div>
       <div class="sidebar-item" onclick="switchTab('settings',this)">
         <span class="sidebar-item-icon">◈</span> Informações do Site
@@ -415,6 +473,54 @@ tr:hover td{background:rgba(255,255,255,.02)}
             <thead><tr><th>Data</th><th>Hora</th><th>Cliente</th><th>Telefone</th><th>Serviço</th><th>Barbeiro</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody id="allBody"><tr><td colspan="8" class="table-empty">Carregando...</td></tr></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SERVICES ── -->
+    <div id="tab-services" class="tab-content">
+
+      <!-- Adicionar novo -->
+      <div class="card" style="margin-bottom:1.5rem;border-color:rgba(255,255,255,.1)">
+        <div class="card-head">
+          <div class="card-title">＋ Adicionar Novo Serviço</div>
+          <div class="saved-pill" id="newSvcPill">✓ Adicionado!</div>
+        </div>
+        <div style="padding:1.4rem;display:grid;grid-template-columns:60px 1fr 1fr 110px 110px auto;gap:.8rem;align-items:end;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Ícone</label>
+            <input class="sg-input" id="ns_icon" type="text" value="✂" style="text-align:center;font-size:1.2rem;padding:.6rem .4rem"/>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Nome do Serviço</label>
+            <input class="sg-input" id="ns_name" type="text" placeholder="Ex: Corte + Hidratação"/>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Descrição</label>
+            <input class="sg-input" id="ns_desc" type="text" placeholder="Breve descrição do serviço"/>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Preço (R$)</label>
+            <input class="sg-input" id="ns_price" type="number" min="0" placeholder="50"/>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <label class="sg-label">Duração</label>
+            <input class="sg-input" id="ns_duration" type="text" placeholder="45 min"/>
+          </div>
+          <button onclick="addService()" style="background:var(--white);color:var(--black);border:none;padding:.72rem 1.2rem;font-weight:900;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;height:fit-content;transition:.2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+            ＋ Adicionar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista de serviços -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">✂ Serviços &amp; Preços — <span style="color:var(--green);font-size:.75rem;font-weight:600">Ao Vivo no Site</span></div>
+          <div style="font-size:.72rem;color:var(--gray);letter-spacing:.06em">Edite e salve — aplica instantaneamente</div>
+        </div>
+        <div id="servicesList" style="padding:.5rem 0">
+          <div style="text-align:center;padding:2rem;color:var(--gray2);font-size:.84rem">Carregando...</div>
         </div>
       </div>
     </div>
@@ -545,7 +651,7 @@ document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='
 function boot(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('adminPanel').style.display='block';
-  loadAll(); loadSettings();
+  loadAll(); loadSettings(); loadServicesAdmin();
   setInterval(loadAll,15000);
   setInterval(updateTime,1000);
 }
@@ -561,6 +667,7 @@ function logout(){
 const tabMeta = {
   dashboard:    ['Dashboard','Resumo e atividade do dia'],
   appointments: ['Agendamentos','Gerencie e atualize os agendamentos'],
+  services:     ['Serviços & Preços','Edite nomes, valores e descrições — ao vivo no site'],
   settings:     ['Informações do Site','Edite e veja aplicado em tempo real'],
   gemini:       ['Chat IA — Gemini','Configure o assistente virtual']
 };
@@ -572,6 +679,7 @@ function switchTab(name, el){
   const [t,s] = tabMeta[name]||['—','—'];
   document.getElementById('pageTitle').textContent = t;
   document.getElementById('pageSub').textContent   = s;
+  if(name === 'services') loadServicesAdmin();
 }
 
 // ── TIME ──
@@ -695,6 +803,166 @@ async function saveSettings(){
     if(r.ok){pill.classList.add('show');setTimeout(()=>pill.classList.remove('show'),3500);showToast('⚡ Aplicado no site agora!');}
   }catch{showToast('Sem conexão (modo demo)');}
   btn.disabled=false; btn.textContent='Salvar e Aplicar';
+}
+
+// ══════════════════════════════════════
+// ── SERVIÇOS ──
+// ══════════════════════════════════════
+let servicesData = [];
+
+async function loadServicesAdmin(){
+  try{
+    const r = await fetch(`${API}/api/services`);
+    servicesData = await r.json();
+    renderServicesList();
+  }catch{
+    document.getElementById('servicesList').innerHTML =
+      '<div style="text-align:center;padding:2rem;color:var(--gray2)">Erro ao carregar serviços</div>';
+  }
+}
+
+function renderServicesList(){
+  const el = document.getElementById('servicesList');
+  if(!servicesData.length){
+    el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray2)">Nenhum serviço cadastrado</div>';
+    return;
+  }
+  el.innerHTML = `
+    <div class="svc-row-header">
+      <span>Ícone</span><span>Nome</span><span>Descrição</span>
+      <span style="text-align:center">Preço R$</span>
+      <span style="text-align:center">Duração</span>
+      <span style="text-align:center">Status</span>
+      <span style="text-align:center">Ações</span>
+    </div>
+    ${servicesData.map(s => `
+      <div class="svc-row" id="srow-${s.id}">
+        <!-- Ícone -->
+        <div>
+          <div class="svc-icon-cell" title="Clique para editar o ícone"
+            onclick="editIcon('${s.id}')" id="sicon-${s.id}">${s.icon||'✂'}</div>
+          <input type="hidden" id="si_icon_${s.id}" value="${s.icon||'✂'}"/>
+        </div>
+        <!-- Nome -->
+        <input class="svc-inp" id="si_name_${s.id}" value="${esc(s.name)}" placeholder="Nome"/>
+        <!-- Desc -->
+        <input class="svc-inp" id="si_desc_${s.id}" value="${esc(s.desc||'')}" placeholder="Descrição"/>
+        <!-- Preço -->
+        <input class="svc-inp svc-price-inp" id="si_price_${s.id}" type="number" min="0" value="${s.price}" placeholder="0"/>
+        <!-- Duração -->
+        <input class="svc-inp" id="si_dur_${s.id}" value="${esc(s.duration||'')}" placeholder="45 min"/>
+        <!-- Toggle -->
+        <button class="svc-toggle ${s.active!==false?'on':'off'}" id="stog-${s.id}"
+          onclick="toggleService('${s.id}')">
+          ${s.active!==false ? '● Ativo' : '○ Inativo'}
+        </button>
+        <!-- Ações -->
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <button class="svc-save-btn" onclick="saveService('${s.id}')">💾 Salvar</button>
+          <div class="svc-saved" id="ssaved-${s.id}">✓ Salvo!</div>
+          <button class="svc-del-btn" onclick="deleteService('${s.id}')">🗑 Excluir</button>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function esc(str){ return String(str).replace(/"/g,'&quot;').replace(/</g,'&lt;') }
+
+function editIcon(id){
+  const current = document.getElementById(`si_icon_${id}`).value;
+  const newIcon = prompt('Cole o emoji do ícone:', current);
+  if(newIcon && newIcon.trim()){
+    document.getElementById(`si_icon_${id}`).value = newIcon.trim();
+    document.getElementById(`sicon-${id}`).textContent = newIcon.trim();
+  }
+}
+
+async function saveService(id){
+  const payload = {
+    name:     document.getElementById(`si_name_${id}`).value,
+    desc:     document.getElementById(`si_desc_${id}`).value,
+    price:    document.getElementById(`si_price_${id}`).value,
+    duration: document.getElementById(`si_dur_${id}`).value,
+    icon:     document.getElementById(`si_icon_${id}`).value,
+  };
+  try{
+    const r = await fetch(`${API}/api/services/${id}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify(payload)
+    });
+    if(r.ok){
+      const saved = document.getElementById(`ssaved-${id}`);
+      saved.style.display='block';
+      setTimeout(()=>saved.style.display='none',2500);
+      // Atualiza local
+      const s = servicesData.find(x=>x.id===id);
+      if(s) Object.assign(s, payload);
+      showToast('✓ Serviço salvo ao vivo!');
+    }
+  }catch{ showToast('Erro ao salvar'); }
+}
+
+async function toggleService(id){
+  const s = servicesData.find(x=>x.id===id);
+  if(!s) return;
+  const newActive = !(s.active !== false);
+  try{
+    await fetch(`${API}/api/services/${id}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify({active: newActive})
+    });
+    s.active = newActive;
+    const btn = document.getElementById(`stog-${id}`);
+    btn.className = `svc-toggle ${newActive?'on':'off'}`;
+    btn.textContent = newActive ? '● Ativo' : '○ Inativo';
+    showToast(newActive ? '✅ Serviço ativado no site!' : '⏸ Serviço desativado no site!');
+  }catch{ showToast('Erro ao atualizar status'); }
+}
+
+async function deleteService(id){
+  const s = servicesData.find(x=>x.id===id);
+  if(!confirm(`Excluir "${s?.name}"? Essa ação não pode ser desfeita.`)) return;
+  try{
+    const r = await fetch(`${API}/api/services/${id}`,{
+      method:'DELETE',
+      headers:{'x-admin-token':token}
+    });
+    if(r.ok){
+      servicesData = servicesData.filter(x=>x.id!==id);
+      renderServicesList();
+      showToast('🗑 Serviço excluído');
+    }
+  }catch{ showToast('Erro ao excluir'); }
+}
+
+async function addService(){
+  const name     = document.getElementById('ns_name').value.trim();
+  const price    = document.getElementById('ns_price').value.trim();
+  const desc     = document.getElementById('ns_desc').value.trim();
+  const duration = document.getElementById('ns_duration').value.trim();
+  const icon     = document.getElementById('ns_icon').value.trim() || '✂';
+  if(!name || !price){ showToast('⚠ Preencha nome e preço'); return; }
+  try{
+    const r = await fetch(`${API}/api/services`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify({name,price,desc,duration,icon})
+    });
+    const d = await r.json();
+    if(r.ok){
+      servicesData.push(d.service);
+      renderServicesList();
+      // Limpa campos
+      ['ns_name','ns_price','ns_desc','ns_duration'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('ns_icon').value='✂';
+      const pill = document.getElementById('newSvcPill');
+      pill.classList.add('show'); setTimeout(()=>pill.classList.remove('show'),3000);
+      showToast('✅ Novo serviço adicionado ao site!');
+    }
+  }catch{ showToast('Erro ao adicionar serviço'); }
 }
 
 // ── GEMINI KEY ──

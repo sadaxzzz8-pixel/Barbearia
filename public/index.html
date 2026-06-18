@@ -652,7 +652,8 @@ footer{
       <div class="s-rule center"></div>
       <p class="s-desc">Cada serviço executado com maestria, precisão e os melhores produtos do mercado.</p>
     </div>
-    <div class="services-grid reveal">
+    <div class="services-grid reveal" id="servicesGrid">
+      <!-- carregado via JS do /api/services -->
       <div class="svc-card"><div class="svc-num">01</div><span class="svc-icon">✂</span><div class="svc-name">Corte Masculino</div><div class="svc-desc">Corte personalizado ao seu estilo com acabamento impecável e técnicas modernas.</div><div class="svc-foot"><div class="svc-price">R$ 45</div><div class="svc-time">45 min</div></div></div>
       <div class="svc-card"><div class="svc-num">02</div><span class="svc-icon">🪒</span><div class="svc-name">Barba</div><div class="svc-desc">Modelagem com navalha quente, toalha aquecida e produtos premium de acabamento.</div><div class="svc-foot"><div class="svc-price">R$ 35</div><div class="svc-time">30 min</div></div></div>
       <div class="svc-card"><div class="svc-num">03</div><span class="svc-icon">💈</span><div class="svc-name">Corte + Barba</div><div class="svc-desc">O combo completo para um visual impecável do início ao fim. O mais pedido!</div><div class="svc-foot"><div class="svc-price">R$ 70</div><div class="svc-time">1h 15min</div></div></div>
@@ -899,6 +900,36 @@ footer{
 <script>
 const API = '';
 let selectedTime = '';
+
+// ── SERVIÇOS DINÂMICOS ──
+async function loadServices(){
+  try{
+    const r = await fetch(`${API}/api/services`);
+    const list = await r.json();
+    const active = list.filter(s => s.active !== false);
+    if(!active.length) return;
+    const grid = document.getElementById('servicesGrid');
+    grid.innerHTML = active.map((s,i)=>`
+      <div class="svc-card">
+        <div class="svc-num">${String(i+1).padStart(2,'0')}</div>
+        <span class="svc-icon">${s.icon||'✂'}</span>
+        <div class="svc-name">${s.name}</div>
+        <div class="svc-desc">${s.desc}</div>
+        <div class="svc-foot">
+          <div class="svc-price">R$ ${s.price}</div>
+          <div class="svc-time">${s.duration}</div>
+        </div>
+      </div>`).join('');
+    // Atualiza também o select do formulário
+    const sel = document.getElementById('bService');
+    if(sel){
+      sel.innerHTML = '<option value="">Selecione...</option>' +
+        active.map(s=>`<option value="${s.name}">${s.name} — R$${s.price}</option>`).join('');
+    }
+  }catch{}
+}
+loadServices();
+setInterval(loadServices, 15000);
 
 // ── SETTINGS AO VIVO ──
 async function loadSettings(){

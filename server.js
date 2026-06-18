@@ -99,6 +99,43 @@ app.get('/api/available-slots', (req, res) => {
   res.json(allSlots.filter(s => !booked.includes(s)));
 });
 
+// ─── LISTAR SERVIÇOS (público) ────────────────────────────
+app.get('/api/services', (req, res) => {
+  res.json(db.services);
+});
+
+// ─── ATUALIZAR SERVIÇO (admin) ────────────────────────────
+app.put('/api/services/:id', requireAdmin, (req, res) => {
+  const svc = db.services.find(s => s.id === req.params.id);
+  if (!svc) return res.status(404).json({ error: 'Serviço não encontrado' });
+  const allowed = ['name', 'desc', 'price', 'duration', 'icon', 'active'];
+  for (const k of allowed) {
+    if (req.body[k] !== undefined) svc[k] = req.body[k];
+  }
+  res.json({ success: true, service: svc });
+});
+
+// ─── CRIAR SERVIÇO (admin) ────────────────────────────────
+app.post('/api/services', requireAdmin, (req, res) => {
+  const { name, desc, price, duration, icon } = req.body;
+  if (!name || !price) return res.status(400).json({ error: 'Nome e preço obrigatórios' });
+  const svc = {
+    id: Date.now().toString(),
+    name, desc: desc || '', price, duration: duration || '',
+    icon: icon || '✂', active: true
+  };
+  db.services.push(svc);
+  res.status(201).json({ success: true, service: svc });
+});
+
+// ─── DELETAR SERVIÇO (admin) ──────────────────────────────
+app.delete('/api/services/:id', requireAdmin, (req, res) => {
+  const idx = db.services.findIndex(s => s.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Serviço não encontrado' });
+  db.services.splice(idx, 1);
+  res.json({ success: true });
+});
+
 // ─── LOGIN ADMIN ──────────────────────────────────────────
 app.post('/api/admin/login', (req, res) => {
   if (req.body.password === db.adminPassword)
