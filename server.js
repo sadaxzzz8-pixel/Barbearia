@@ -180,6 +180,20 @@ app.post('/api/admin/login', (req, res) => {
   res.status(401).json({ error: 'Senha incorreta' });
 });
 
+// ─── MUDAR SENHA ADMIN ────────────────────────────────────
+app.post('/api/admin/change-password', requireAdmin, (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  if (!currentPassword || !newPassword)
+    return res.status(400).json({ error: 'Preencha todos os campos' });
+  if (currentPassword !== db.adminPassword)
+    return res.status(401).json({ error: 'Senha atual incorreta' });
+  if (newPassword.length < 6)
+    return res.status(400).json({ error: 'A nova senha deve ter pelo menos 6 caracteres' });
+  db.adminPassword = newPassword;
+  // Retorna novo token
+  res.json({ success: true, token: newPassword, message: 'Senha alterada com sucesso!' });
+});
+
 // ════════════════════════════════════════════════════════════
 // 🔑 GEMINI API KEY — COLE SUA CHAVE PERMANENTE AQUI
 // ════════════════════════════════════════════════════════════

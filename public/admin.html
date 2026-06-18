@@ -343,7 +343,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
       onkeydown="if(event.key==='Enter')doLogin()"/>
     <button class="login-btn" onclick="doLogin()">Entrar no Painel</button>
     <p class="login-err" id="loginErr">Senha incorreta. Tente novamente.</p>
-    <p class="login-hint">Senha padrão: carvalho2024</p>
+
   </div>
 </div>
 
@@ -382,6 +382,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
       <div class="sidebar-item" onclick="switchTab('gemini',this)">
         <span class="sidebar-item-icon">◉</span> Chat IA — Gemini
+      </div>
+      <div class="sidebar-item" onclick="switchTab('security',this)">
+        <span class="sidebar-item-icon">🔒</span> Segurança
       </div>
     </nav>
 
@@ -642,6 +645,38 @@ tr:hover td{background:rgba(255,255,255,.02)}
       </div>
     </div>
 
+    <!-- ── SECURITY ── -->
+    <div id="tab-security" class="tab-content">
+      <div class="card" style="max-width:500px">
+        <div class="card-head">
+          <div class="card-title">🔒 Alterar Senha do Painel</div>
+        </div>
+        <div style="padding:1.8rem;display:flex;flex-direction:column;gap:1.1rem">
+          <div class="sg">
+            <label class="sg-label">Senha Atual</label>
+            <input class="sg-input" id="pw_current" type="password" placeholder="••••••••"/>
+          </div>
+          <div class="sg">
+            <label class="sg-label">Nova Senha</label>
+            <input class="sg-input" id="pw_new" type="password" placeholder="Mínimo 6 caracteres"
+              onkeydown="if(event.key==='Enter')changePassword()"/>
+          </div>
+          <div class="sg">
+            <label class="sg-label">Confirmar Nova Senha</label>
+            <input class="sg-input" id="pw_confirm" type="password" placeholder="Repita a nova senha"
+              onkeydown="if(event.key==='Enter')changePassword()"/>
+          </div>
+          <div id="pw_msg" style="display:none;padding:.8rem 1rem;font-size:.84rem;font-weight:600;border:1px solid;border-radius:2px"></div>
+          <button onclick="changePassword()" style="background:var(--white);color:var(--black);border:2px solid var(--white);padding:.85rem;font-weight:900;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit" onmouseover="this.style.background='transparent';this.style.color='var(--white)'" onmouseout="this.style.background='var(--white)';this.style.color='var(--black)'">
+            🔒 Alterar Senha
+          </button>
+          <div style="font-size:.75rem;color:var(--gray2);line-height:1.6;border-top:1px solid rgba(255,255,255,.06);padding-top:1rem">
+            ⚠ Após alterar, você continuará logado com a nova senha. Na próxima vez que fizer login, use a senha nova.
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -666,7 +701,7 @@ async function doLogin(){
       boot();
     } else err.style.display='block';
   }catch{
-    if(pass==='rdd@'){token=pass;boot();}
+    if(pass==='carvalho2024'){token=pass;boot();}
     else err.style.display='block';
   }
 }
@@ -694,7 +729,8 @@ const tabMeta = {
   barbers:      ['Barbeiros','Gerencie a equipe — ao vivo no site e no formulário de agendamento'],
   services:     ['Serviços & Preços','Edite nomes, valores e descrições — ao vivo no site'],
   settings:     ['Informações do Site','Edite e veja aplicado em tempo real'],
-  gemini:       ['Chat IA — Gemini','Configure o assistente virtual']
+  gemini:       ['Chat IA — Gemini','Configure o assistente virtual'],
+  security:     ['Segurança','Altere a senha de acesso ao painel admin']
 };
 function switchTab(name, el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -1197,6 +1233,47 @@ async function applyGeminiKey(){
   }catch{
     result.textContent = '❌ Sem conexão com o servidor. Certifique-se que node server.js está rodando.';
     result.style.cssText += ';display:block;border-color:rgba(255,107,107,.3);color:var(--red);background:rgba(255,107,107,.06)';
+  }
+}
+
+// ── MUDAR SENHA ──
+async function changePassword(){
+  const cur  = document.getElementById('pw_current').value;
+  const nw   = document.getElementById('pw_new').value;
+  const conf = document.getElementById('pw_confirm').value;
+  const msg  = document.getElementById('pw_msg');
+
+  const show = (text, ok) => {
+    msg.textContent = text;
+    msg.style.display = 'block';
+    msg.style.borderColor = ok ? 'rgba(107,255,107,.3)' : 'rgba(255,107,107,.3)';
+    msg.style.color        = ok ? 'var(--green)' : 'var(--red)';
+    msg.style.background   = ok ? 'rgba(107,255,107,.06)' : 'rgba(255,107,107,.06)';
+  };
+
+  if(!cur || !nw || !conf){ show('⚠ Preencha todos os campos', false); return; }
+  if(nw !== conf){ show('❌ As senhas não coincidem', false); return; }
+  if(nw.length < 6){ show('❌ A nova senha deve ter pelo menos 6 caracteres', false); return; }
+
+  try{
+    const r = await fetch(`${API}/api/admin/change-password`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify({currentPassword:cur, newPassword:nw})
+    });
+    const d = await r.json();
+    if(r.ok){
+      token = d.token; // actualiza o token em memória
+      show('✅ Senha alterada com sucesso!', true);
+      document.getElementById('pw_current').value = '';
+      document.getElementById('pw_new').value     = '';
+      document.getElementById('pw_confirm').value = '';
+      showToast('🔒 Senha alterada!');
+    } else {
+      show('❌ ' + (d.error || 'Erro ao alterar senha'), false);
+    }
+  }catch{
+    show('❌ Sem conexão com o servidor', false);
   }
 }
 
