@@ -449,6 +449,117 @@ footer{
 .footer-bottom-links a:hover{color:var(--white)}
 
 /* ═══════════════════════════════════
+   FIDELIDADE & PERFIL
+═══════════════════════════════════ */
+
+/* Tabs de navegação interna */
+.loyalty-tabs{display:flex;gap:0;border:1px solid rgba(255,255,255,.08);margin-bottom:2.5rem;overflow:hidden}
+.loyalty-tab{flex:1;padding:.75rem 1rem;text-align:center;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);cursor:pointer;transition:.25s;border-right:1px solid rgba(255,255,255,.08)}
+.loyalty-tab:last-child{border-right:none}
+.loyalty-tab.active{background:var(--white);color:var(--black)}
+.loyalty-tab:hover:not(.active){background:rgba(255,255,255,.05);color:var(--white)}
+
+/* Lookup de perfil */
+.lookup-wrap{max-width:440px;margin:0 auto 3rem;text-align:center}
+.lookup-wrap p{color:var(--gray);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem}
+.lookup-row{display:flex;gap:.6rem}
+.lookup-input{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);padding:.82rem 1rem;color:var(--white);font-size:.9rem;outline:none;transition:.25s;font-family:inherit}
+.lookup-input:focus{border-color:var(--white)}
+.lookup-btn{background:var(--white);color:var(--black);border:2px solid var(--white);padding:.82rem 1.4rem;font-weight:900;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit;white-space:nowrap}
+.lookup-btn:hover{background:transparent;color:var(--white)}
+.lookup-error{color:#ff7070;font-size:.82rem;margin-top:.7rem;text-align:center}
+
+/* Card de perfil */
+.profile-card{
+  background:var(--black3);border:1px solid rgba(255,255,255,.09);
+  padding:2rem;margin-bottom:1.5rem;
+}
+.profile-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap}
+.profile-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--white);color:var(--black);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;font-weight:900;flex-shrink:0;
+}
+.profile-name{font-size:1.3rem;font-weight:900;margin-bottom:.2rem}
+.profile-phone{font-size:.8rem;color:var(--gray);letter-spacing:.06em}
+.profile-level-badge{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  padding:.5rem 1.1rem;border:1px solid;font-size:.8rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+}
+.profile-points-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);margin-bottom:1.8rem}
+.profile-stat{background:var(--black4);padding:1.2rem;text-align:center}
+.profile-stat-num{font-size:1.8rem;font-weight:900;color:var(--white);line-height:1}
+.profile-stat-label{font-size:.6rem;color:var(--gray);text-transform:uppercase;letter-spacing:.14em;margin-top:4px}
+.progress-wrap{margin-bottom:1.5rem}
+.progress-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray);letter-spacing:.08em;margin-bottom:.5rem}
+.progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s ease;background:var(--white)}
+
+/* Níveis */
+.levels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:0}
+.level-card{border:1px solid rgba(255,255,255,.07);padding:1.4rem 1rem;text-align:center;transition:.25s}
+.level-card.current{border-width:2px}
+.level-icon{font-size:2rem;margin-bottom:.6rem;display:block}
+.level-name{font-size:.88rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem}
+.level-range{font-size:.7rem;color:var(--gray);margin-bottom:.8rem}
+.level-perks{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.level-perks li{font-size:.72rem;color:var(--gray2)}
+.level-perks li::before{content:'✓ ';color:inherit}
+
+/* Desafios */
+.challenges-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.challenge-card{background:var(--black3);border:1px solid rgba(255,255,255,.07);padding:1.5rem;transition:.3s}
+.challenge-card:hover{border-color:rgba(255,255,255,.2)}
+.challenge-top{display:flex;align-items:center;gap:12px;margin-bottom:1rem}
+.challenge-icon{font-size:1.6rem}
+.challenge-title{font-size:.95rem;font-weight:800}
+.challenge-desc{font-size:.8rem;color:var(--gray);line-height:1.6;margin-bottom:.9rem}
+.challenge-reward{font-size:.78rem;font-weight:700;color:var(--white);background:rgba(255,255,255,.07);padding:.3rem .8rem;display:inline-block}
+
+/* Recompensas */
+.rewards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.reward-card{background:var(--black3);border:1px solid rgba(255,255,255,.07);padding:1.5rem;text-align:center;transition:.3s;display:flex;flex-direction:column;gap:.75rem}
+.reward-card:hover{border-color:rgba(255,255,255,.2)}
+.reward-icon{font-size:2rem}
+.reward-title{font-size:.95rem;font-weight:800}
+.reward-desc{font-size:.78rem;color:var(--gray);line-height:1.55;flex:1}
+.reward-cost{font-size:1.1rem;font-weight:900;color:var(--white)}
+.reward-cost span{font-size:.7rem;color:var(--gray);font-weight:400}
+.btn-redeem{background:var(--white);color:var(--black);border:2px solid var(--white);padding:.55rem 1rem;font-weight:900;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:inherit}
+.btn-redeem:hover{background:transparent;color:var(--white)}
+.btn-redeem:disabled{opacity:.35;cursor:not-allowed}
+
+/* Histórico */
+.history-list{display:flex;flex-direction:column;gap:0}
+.history-item{display:flex;align-items:center;gap:12px;padding:.9rem 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.history-item:last-child{border-bottom:none}
+.history-dot{width:8px;height:8px;border-radius:50%;background:var(--white);flex-shrink:0}
+.history-service{font-size:.88rem;font-weight:600;color:var(--white)}
+.history-meta{font-size:.72rem;color:var(--gray);margin-top:2px}
+.history-pts{margin-left:auto;font-size:.85rem;font-weight:800;white-space:nowrap}
+.history-pts.positive{color:#6bff6b}
+.history-pts.negative{color:#ff7070}
+
+/* Produtos */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.product-card{background:var(--black3);border:1px solid rgba(255,255,255,.07);padding:1.2rem;text-align:center;transition:.25s}
+.product-card:hover{border-color:rgba(255,255,255,.2)}
+.product-icon{font-size:1.8rem;margin-bottom:.6rem;display:block}
+.product-name{font-size:.88rem;font-weight:800;margin-bottom:.3rem}
+.product-desc{font-size:.72rem;color:var(--gray);line-height:1.5;margin-bottom:.7rem}
+.product-price{font-size:1.1rem;font-weight:900}
+
+/* Sub-tabs dentro do perfil */
+.profile-subtabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.profile-subtab{padding:.4rem .9rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--gray);cursor:pointer;transition:.2s;font-family:inherit}
+.profile-subtab.active{background:var(--white);color:var(--black);border-color:var(--white)}
+.profile-subtab:hover:not(.active){color:var(--white);border-color:rgba(255,255,255,.4)}
+.profile-panel{display:none}.profile-panel.active{display:block}
+.empty-state{text-align:center;padding:2.5rem 1rem;color:var(--gray);font-size:.88rem;line-height:1.7}
+.empty-state span{display:block;font-size:2rem;margin-bottom:.5rem}
+
+/* ═══════════════════════════════════
    WHATSAPP FLOAT
 ═══════════════════════════════════ */
 .wa-float{
@@ -540,6 +651,8 @@ footer{
       <li><a href="#services">Serviços</a></li>
       <li><a href="#barbers">Barbeiros</a></li>
       <li><a href="#about">Sobre</a></li>
+      <li><a href="#loyalty">🏆 Fidelidade</a></li>
+      <li><a href="#profile">👤 Perfil</a></li>
       <li><a href="#booking" class="nav-book">✂ Agendar</a></li>
     </ul>
     <div class="hamburger" id="ham" onclick="toggleNav()">
@@ -551,6 +664,8 @@ footer{
   <a href="#services" onclick="closeNav()">Serviços</a>
   <a href="#barbers"  onclick="closeNav()">Barbeiros</a>
   <a href="#about"    onclick="closeNav()">Sobre</a>
+  <a href="#loyalty"  onclick="closeNav()">🏆 Fidelidade</a>
+  <a href="#profile"  onclick="closeNav()">👤 Perfil</a>
   <a href="#booking"  onclick="closeNav()" style="color:var(--white)">✂ Agendar Agora</a>
 </nav>
 
@@ -780,6 +895,151 @@ footer{
   </div>
 </section>
 
+<!-- ═══ FIDELIDADE ═══ -->
+<section id="loyalty" class="section s-light">
+  <div class="container">
+    <div class="s-header center-text reveal">
+      <div class="s-eyebrow center">Programa de Fidelidade</div>
+      <h2 class="s-title">Ganha pontos, <em>sobe de nível</em></h2>
+      <div class="s-rule center"></div>
+      <p class="s-desc">Cada visita conta! Acumula pontos, desbloqueia recompensas e sobe de nível. Quanto mais visitas, mais benefícios exclusivos tens.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="loyalty-tabs reveal">
+      <div class="loyalty-tab active" onclick="loyaltyTab('levels',this)">🏆 Níveis</div>
+      <div class="loyalty-tab" onclick="loyaltyTab('challenges',this)">🎯 Desafios</div>
+      <div class="loyalty-tab" onclick="loyaltyTab('rewards',this)">🎁 Recompensas</div>
+    </div>
+
+    <!-- Níveis -->
+    <div id="lt-levels" class="loyalty-panel reveal">
+      <div class="levels-grid" id="levelsGrid">
+        <div class="level-card" style="border-color:#cd7f32">
+          <span class="level-icon">🥉</span>
+          <div class="level-name" style="color:#cd7f32">Bronze</div>
+          <div class="level-range">0 – 299 pontos</div>
+          <ul class="level-perks"><li style="color:#888">5% desconto em produtos</li></ul>
+        </div>
+        <div class="level-card" style="border-color:#c0c0c0">
+          <span class="level-icon">🥈</span>
+          <div class="level-name" style="color:#c0c0c0">Prata</div>
+          <div class="level-range">300 – 799 pontos</div>
+          <ul class="level-perks"><li style="color:#888">10% desconto em produtos</li><li style="color:#888">Agendamento prioritário</li></ul>
+        </div>
+        <div class="level-card" style="border-color:#ffd700">
+          <span class="level-icon">🥇</span>
+          <div class="level-name" style="color:#ffd700">Ouro</div>
+          <div class="level-range">800+ pontos</div>
+          <ul class="level-perks"><li style="color:#888">15% desconto em produtos</li><li style="color:#888">Agendamento prioritário</li><li style="color:#888">Brinde mensal exclusivo</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desafios -->
+    <div id="lt-challenges" class="loyalty-panel" style="display:none">
+      <div class="challenges-grid" id="challengesGrid">
+        <div class="challenge-card"><div class="challenge-top"><span class="challenge-icon">🔥</span><div><div class="challenge-title">3 Visitas no Mês</div></div></div><div class="challenge-desc">Visita-nos 3 vezes este mês e ganha pontos extra!</div><span class="challenge-reward">+150 pontos</span></div>
+        <div class="challenge-card"><div class="challenge-top"><span class="challenge-icon">🪒</span><div><div class="challenge-title">Experimenta a Barba</div></div></div><div class="challenge-desc">Faz o serviço de Barba pela primeira vez e ganha.</div><span class="challenge-reward">+80 pontos</span></div>
+        <div class="challenge-card"><div class="challenge-top"><span class="challenge-icon">👥</span><div><div class="challenge-title">Traz um Amigo</div></div></div><div class="challenge-desc">Traz um amigo novo à barbearia e sê recompensado!</div><span class="challenge-reward">+200 pontos</span></div>
+      </div>
+    </div>
+
+    <!-- Recompensas -->
+    <div id="lt-rewards" class="loyalty-panel" style="display:none">
+      <div class="rewards-grid" id="rewardsGrid">
+        <div class="reward-card"><span class="reward-icon">🏷</span><div class="reward-title">Desconto 10%</div><div class="reward-desc">10% de desconto no próximo serviço</div><div class="reward-cost">100 <span>pontos</span></div></div>
+        <div class="reward-card"><span class="reward-icon">🎁</span><div class="reward-title">Sobrancelha Grátis</div><div class="reward-desc">Um design de sobrancelha por conta da casa</div><div class="reward-cost">200 <span>pontos</span></div></div>
+        <div class="reward-card"><span class="reward-icon">✂</span><div class="reward-title">Corte Grátis</div><div class="reward-desc">Um corte masculino completamente grátis</div><div class="reward-cost">500 <span>pontos</span></div></div>
+        <div class="reward-card"><span class="reward-icon">💎</span><div class="reward-title">Kit de Produtos</div><div class="reward-desc">Kit exclusivo de produtos para cabelo</div><div class="reward-cost">350 <span>pontos</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PERFIL DO CLIENTE ═══ -->
+<section id="profile" class="section s-mid">
+  <div class="container">
+    <div class="s-header center-text reveal">
+      <div class="s-eyebrow center">Área do Cliente</div>
+      <h2 class="s-title">O teu <em>perfil</em></h2>
+      <div class="s-rule center"></div>
+      <p class="s-desc">Introduz o teu número de telemóvel para acederes ao teu histórico, pontos e recompensas.</p>
+    </div>
+
+    <!-- Lookup -->
+    <div class="lookup-wrap reveal" id="lookupWrap">
+      <p>Usa o número com que agendaste a tua última visita.</p>
+      <div class="lookup-row">
+        <input class="lookup-input" id="lookupPhone" type="tel" placeholder="Ex: 912 345 678" onkeydown="if(event.key==='Enter')lookupClient()"/>
+        <button class="lookup-btn" onclick="lookupClient()">Ver Perfil →</button>
+      </div>
+      <div class="lookup-error" id="lookupError" style="display:none"></div>
+    </div>
+
+    <!-- Perfil carregado -->
+    <div id="profileArea" style="display:none">
+
+      <!-- Header do perfil -->
+      <div class="profile-card reveal">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profAvatar">C</div>
+          <div>
+            <div class="profile-name" id="profName">—</div>
+            <div class="profile-phone" id="profPhone">—</div>
+          </div>
+          <div class="profile-level-badge" id="profLevelBadge">—</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="profile-points-row">
+          <div class="profile-stat"><div class="profile-stat-num" id="profPoints">0</div><div class="profile-stat-label">Pontos</div></div>
+          <div class="profile-stat"><div class="profile-stat-num" id="profVisits">0</div><div class="profile-stat-label">Visitas</div></div>
+          <div class="profile-stat"><div class="profile-stat-num" id="profMember">—</div><div class="profile-stat-label">Membro desde</div></div>
+        </div>
+
+        <!-- Barra de progresso -->
+        <div class="progress-wrap">
+          <div class="progress-label"><span id="progCurrentLabel">Bronze</span><span id="progNextLabel">Prata em 300 pts</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+        </div>
+
+        <button onclick="logoutProfile()" style="font-size:.72rem;color:var(--gray);background:none;border:none;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;padding:.2rem 0">← Sair do perfil</button>
+      </div>
+
+      <!-- Sub-tabs -->
+      <div class="profile-subtabs">
+        <button class="profile-subtab active" onclick="profileTab('history',this)">📋 Histórico</button>
+        <button class="profile-subtab" onclick="profileTab('rewards',this)">🎁 Resgatar</button>
+        <button class="profile-subtab" onclick="profileTab('products',this)">💈 Produtos</button>
+        <button class="profile-subtab" onclick="profileTab('challenges',this)">🎯 Desafios</button>
+      </div>
+
+      <!-- Histórico -->
+      <div class="profile-panel active" id="pp-history">
+        <div class="profile-card">
+          <div class="history-list" id="historyList"><div class="empty-state"><span>📋</span>Ainda sem histórico de visitas.</div></div>
+        </div>
+      </div>
+
+      <!-- Resgatar recompensas -->
+      <div class="profile-panel" id="pp-rewards">
+        <div class="rewards-grid" id="profileRewardsGrid"></div>
+      </div>
+
+      <!-- Produtos recomendados -->
+      <div class="profile-panel" id="pp-products">
+        <div class="products-grid" id="profileProductsGrid"></div>
+      </div>
+
+      <!-- Desafios ativos -->
+      <div class="profile-panel" id="pp-challenges">
+        <div class="challenges-grid" id="profileChallengesGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="footer-inner">
@@ -998,6 +1258,184 @@ function openWhatsApp(){
   const phone = document.getElementById('cPhone').textContent.replace(/\D/g,'');
   const msg   = encodeURIComponent('Olá! Vim pelo site da Barbearia Carvalho e gostaria de agendar um horário.');
   window.open(`https://wa.me/55${phone}?text=${msg}`,'_blank');
+}
+
+// ══════════════════════════════════
+// ── FIDELIDADE ──
+// ══════════════════════════════════
+let loyaltyData = {};
+let currentClient = null;
+
+async function loadLoyaltyPublic(){
+  try{
+    const [ch, rw] = await Promise.all([
+      fetch(`${API}/api/challenges`).then(r=>r.json()),
+      fetch(`${API}/api/rewards`).then(r=>r.json())
+    ]);
+    // Renderiza desafios
+    const cg = document.getElementById('challengesGrid');
+    if(cg && ch.length) cg.innerHTML = ch.filter(c=>c.active).map(c=>`
+      <div class="challenge-card">
+        <div class="challenge-top"><span class="challenge-icon">${c.icon}</span><div><div class="challenge-title">${c.title}</div></div></div>
+        <div class="challenge-desc">${c.desc}</div>
+        <span class="challenge-reward">+${c.reward} pontos</span>
+      </div>`).join('');
+    // Renderiza recompensas
+    const rg = document.getElementById('rewardsGrid');
+    if(rg && rw.length) rg.innerHTML = rw.filter(r=>r.active).map(r=>`
+      <div class="reward-card">
+        <span class="reward-icon">${r.icon}</span>
+        <div class="reward-title">${r.title}</div>
+        <div class="reward-desc">${r.desc}</div>
+        <div class="reward-cost">${r.cost} <span>pontos</span></div>
+      </div>`).join('');
+    loyaltyData = { challenges: ch, rewards: rw };
+  }catch{}
+}
+loadLoyaltyPublic();
+
+function loyaltyTab(name, btn){
+  document.querySelectorAll('.loyalty-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.loyalty-panel').forEach(p=>p.style.display='none');
+  btn.classList.add('active');
+  document.getElementById('lt-'+name).style.display='block';
+}
+
+// ── PERFIL DO CLIENTE ──
+async function lookupClient(){
+  const raw   = document.getElementById('lookupPhone').value.trim();
+  const phone = raw.replace(/\s/g,'');
+  const err   = document.getElementById('lookupError');
+  err.style.display='none';
+  if(!phone){ err.textContent='⚠ Introduz o teu número de telemóvel'; err.style.display='block'; return; }
+  try{
+    const r = await fetch(`${API}/api/clients/lookup?phone=${encodeURIComponent(phone)}`);
+    const d = await r.json();
+    if(!r.ok){ err.textContent = d.error || 'Cliente não encontrado'; err.style.display='block'; return; }
+    currentClient = d;
+    renderProfile(d);
+    document.getElementById('lookupWrap').style.display='none';
+    document.getElementById('profileArea').style.display='block';
+  }catch{
+    err.textContent='Erro de ligação. Tenta novamente.'; err.style.display='block';
+  }
+}
+
+function renderProfile(c){
+  const levelColors = { bronze:'#cd7f32', silver:'#c0c0c0', gold:'#ffd700' };
+  const col = levelColors[c.level] || '#fff';
+  // Avatar
+  document.getElementById('profAvatar').textContent = c.name.charAt(0).toUpperCase();
+  document.getElementById('profName').textContent   = c.name;
+  document.getElementById('profPhone').textContent  = c.phone;
+  document.getElementById('profPoints').textContent = c.points;
+  document.getElementById('profVisits').textContent = c.totalVisits;
+  document.getElementById('profMember').textContent = new Date(c.joinedAt).toLocaleDateString('pt-PT',{month:'short',year:'numeric'});
+  // Badge nível
+  const badge = document.getElementById('profLevelBadge');
+  badge.textContent = `${c.levelInfo.icon} ${c.levelInfo.label}`;
+  badge.style.borderColor = col;
+  badge.style.color = col;
+  // Barra de progresso
+  document.getElementById('progFill').style.width = c.progress+'%';
+  document.getElementById('progFill').style.background = col;
+  document.getElementById('progCurrentLabel').textContent = c.levelInfo.label;
+  document.getElementById('progNextLabel').textContent = c.nextLevel
+    ? `${c.nextLevel.label} em ${c.nextLevel.min - c.points} pts`
+    : '🥇 Nível máximo atingido!';
+  // Histórico
+  const hist = document.getElementById('historyList');
+  if(!c.history.length){
+    hist.innerHTML='<div class="empty-state"><span>📋</span>Ainda sem histórico de visitas.</div>';
+  } else {
+    hist.innerHTML = c.history.slice(0,10).map(h=>`
+      <div class="history-item">
+        <div class="history-dot"></div>
+        <div>
+          <div class="history-service">${h.service}</div>
+          <div class="history-meta">${h.date} · ${h.barber}</div>
+        </div>
+        <div class="history-pts ${h.points>0?'positive':'negative'}">${h.points>0?'+':''}${h.points} pts</div>
+      </div>`).join('');
+  }
+  // Recompensas com botão de resgate
+  const rg = document.getElementById('profileRewardsGrid');
+  if(c.rewards && c.rewards.length){
+    rg.innerHTML = c.rewards.map(r=>`
+      <div class="reward-card">
+        <span class="reward-icon">${r.icon}</span>
+        <div class="reward-title">${r.title}</div>
+        <div class="reward-desc">${r.desc}</div>
+        <div class="reward-cost">${r.cost} <span>pontos</span></div>
+        <button class="btn-redeem" onclick="redeemReward('${r.id}')" ${c.points < r.cost ? 'disabled' : ''}>
+          ${c.points >= r.cost ? 'Resgatar' : `Precisas de mais ${r.cost - c.points} pts`}
+        </button>
+      </div>`).join('');
+  }
+  // Produtos recomendados
+  const pg = document.getElementById('profileProductsGrid');
+  fetch(`${API}/api/products`).then(r=>r.json()).then(prods=>{
+    if(!prods.length){ pg.innerHTML='<div class="empty-state"><span>💈</span>Sem produtos disponíveis.</div>'; return; }
+    pg.innerHTML = prods.map(p=>`
+      <div class="product-card">
+        <span class="product-icon">${p.icon}</span>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="product-price">€${p.price}</div>
+      </div>`).join('');
+  }).catch(()=>{});
+  // Desafios
+  const cg = document.getElementById('profileChallengesGrid');
+  if(c.challenges && c.challenges.length){
+    cg.innerHTML = c.challenges.map(ch=>`
+      <div class="challenge-card">
+        <div class="challenge-top"><span class="challenge-icon">${ch.icon}</span><div><div class="challenge-title">${ch.title}</div></div></div>
+        <div class="challenge-desc">${ch.desc}</div>
+        <span class="challenge-reward">+${ch.reward} pontos</span>
+      </div>`).join('');
+  } else {
+    cg.innerHTML='<div class="empty-state"><span>🎯</span>Sem desafios activos no momento.</div>';
+  }
+}
+
+async function redeemReward(rewardId){
+  if(!currentClient) return;
+  if(!confirm('Confirmas o resgate desta recompensa?')) return;
+  try{
+    const r = await fetch(`${API}/api/clients/${currentClient.id}/redeem`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({rewardId})
+    });
+    const d = await r.json();
+    if(r.ok){
+      currentClient.points = d.points;
+      currentClient.level  = d.level;
+      showToast(`🎁 "${d.reward.title}" resgatado! Mostra ao barbeiro.`);
+      // Actualiza pontos no ecrã
+      document.getElementById('profPoints').textContent = d.points;
+      // Recarrega perfil completo
+      const lookup = await fetch(`${API}/api/clients/lookup?phone=${currentClient.phone}`);
+      const fresh  = await lookup.json();
+      if(lookup.ok){ currentClient = fresh; renderProfile(fresh); }
+    } else {
+      showToast('❌ '+d.error);
+    }
+  }catch{ showToast('Erro de ligação.'); }
+}
+
+function profileTab(name, btn){
+  document.querySelectorAll('.profile-subtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.profile-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pp-'+name).classList.add('active');
+}
+
+function logoutProfile(){
+  currentClient = null;
+  document.getElementById('profileArea').style.display='none';
+  document.getElementById('lookupWrap').style.display='block';
+  document.getElementById('lookupPhone').value='';
+  document.getElementById('lookupError').style.display='none';
 }
 
 // ── SCROLL REVEAL ──

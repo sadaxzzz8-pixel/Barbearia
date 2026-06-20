@@ -285,6 +285,21 @@ tr:hover td{background:rgba(255,255,255,.02)}
 }
 .svc-row-header span{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray2)}
 
+/* ── LOYALTY ROWS ── */
+.loyalty-row{
+  display:grid;grid-template-columns:40px 1fr 1.5fr 80px 100px 80px 110px;
+  gap:.6rem;align-items:center;padding:.85rem 1.3rem;
+  border-bottom:1px solid rgba(255,255,255,.05);transition:.2s;
+}
+.loyalty-row:last-child{border-bottom:none}
+.loyalty-row:hover{background:rgba(255,255,255,.02)}
+.loyalty-row-header{
+  display:grid;grid-template-columns:40px 1fr 1.5fr 80px 100px 80px 110px;
+  gap:.6rem;padding:.6rem 1.3rem;
+  background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.07);
+}
+.loyalty-row-header span{font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gray2)}
+
 /* ── BARBEIROS ── */
 .barber-row{
   display:grid;
@@ -376,6 +391,17 @@ tr:hover td{background:rgba(255,255,255,.02)}
       <div class="sidebar-item" onclick="switchTab('services',this)">
         <span class="sidebar-item-icon">✂</span> Serviços &amp; Preços
       </div>
+      <div class="sidebar-group-label">Fidelidade</div>
+      <div class="sidebar-item" onclick="switchTab('clients',this)">
+        <span class="sidebar-item-icon">👥</span> Clientes
+        <span class="sidebar-badge" id="clientsBadge">0</span>
+      </div>
+      <div class="sidebar-item" onclick="switchTab('loyalty',this)">
+        <span class="sidebar-item-icon">🏆</span> Desafios &amp; Níveis
+      </div>
+      <div class="sidebar-item" onclick="switchTab('rewardsmgr',this)">
+        <span class="sidebar-item-icon">🎁</span> Recompensas
+      </div>
       <div class="sidebar-group-label">Configurações</div>
       <div class="sidebar-item" onclick="switchTab('settings',this)">
         <span class="sidebar-item-icon">◈</span> Informações do Site
@@ -457,6 +483,86 @@ tr:hover td{background:rgba(255,255,255,.02)}
             <tbody id="allBody"><tr><td colspan="8" class="table-empty">Carregando...</td></tr></tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <!-- ── CLIENTS ── -->
+    <div id="tab-clients" class="tab-content">
+      <div class="stats-grid" style="margin-bottom:1.5rem">
+        <div class="stat-card"><div class="stat-icon">👥</div><div><div class="stat-num" id="cliTotal">0</div><div class="stat-label">Total Clientes</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🥉</div><div><div class="stat-num" id="cliBronze">0</div><div class="stat-label">Bronze</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🥈</div><div><div class="stat-num" id="cliSilver">0</div><div class="stat-label">Prata</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🥇</div><div><div class="stat-num" id="cliGold">0</div><div class="stat-label">Ouro</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">👥 Clientes &amp; Pontos de Fidelidade</div>
+          <div style="font-size:.72rem;color:var(--gray)">Pontos atribuídos automaticamente ao concluir agendamentos</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cliente</th><th>Telefone</th><th>Nível</th><th>Pontos</th><th>Visitas</th><th>Última Visita</th><th>Ações</th></tr></thead>
+            <tbody id="clientsBody"><tr><td colspan="7" class="table-empty">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Modal editar pontos -->
+      <div id="pointsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center">
+        <div style="background:var(--black3);border:1px solid rgba(255,255,255,.12);padding:2rem;width:380px;max-width:95vw">
+          <div style="font-size:.9rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem">✏ Ajustar Pontos</div>
+          <div style="font-size:.84rem;color:var(--gray);margin-bottom:1rem">Cliente: <strong id="modalClientName">—</strong></div>
+          <div class="sg" style="margin-bottom:.8rem"><label class="sg-label">Pontos actuais</label><input class="sg-input" id="modalCurrentPts" type="number" readonly style="opacity:.6"/></div>
+          <div class="sg" style="margin-bottom:.8rem"><label class="sg-label">Ajuste (+ ou -)</label><input class="sg-input" id="modalDelta" type="number" placeholder="Ex: 50 ou -30"/></div>
+          <div class="sg" style="margin-bottom:1.2rem"><label class="sg-label">Motivo</label><input class="sg-input" id="modalReason" type="text" placeholder="Ex: Bónus de aniversário"/></div>
+          <div style="display:flex;gap:.7rem">
+            <button onclick="submitPoints()" style="flex:1;background:var(--white);color:var(--black);border:none;padding:.75rem;font-weight:900;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Guardar</button>
+            <button onclick="closePointsModal()" style="background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--gray);padding:.75rem 1rem;cursor:pointer;font-family:inherit">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LOYALTY (DESAFIOS) ── -->
+    <div id="tab-loyalty" class="tab-content">
+      <!-- Novo desafio -->
+      <div class="card" style="margin-bottom:1.5rem;border-color:rgba(255,255,255,.1)">
+        <div class="card-head">
+          <div class="card-title">＋ Novo Desafio Mensal</div>
+          <div class="saved-pill" id="newChallengePill">✓ Criado!</div>
+        </div>
+        <div style="padding:1.4rem;display:grid;grid-template-columns:50px 1fr 1fr 100px 110px auto;gap:.8rem;align-items:end;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Ícone</label><input class="sg-input" id="nc_icon" value="🏆" style="text-align:center;font-size:1.2rem;padding:.6rem .3rem"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Título</label><input class="sg-input" id="nc_title" placeholder="Ex: 3 Visitas no Mês"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Descrição</label><input class="sg-input" id="nc_desc" placeholder="Descrição breve"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Objetivo</label><input class="sg-input" id="nc_goal" type="number" min="1" placeholder="3"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Recompensa (pts)</label><input class="sg-input" id="nc_reward" type="number" min="1" placeholder="150"/></div>
+          <button onclick="addChallenge()" style="background:var(--white);color:var(--black);border:none;padding:.72rem 1rem;font-weight:900;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;height:fit-content" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">＋ Criar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🎯 Desafios Activos</div></div>
+        <div id="challengesList" style="padding:.5rem 0"><div style="text-align:center;padding:2rem;color:var(--gray2)">Carregando...</div></div>
+      </div>
+    </div>
+
+    <!-- ── REWARDS MANAGER ── -->
+    <div id="tab-rewardsmgr" class="tab-content">
+      <div class="card" style="margin-bottom:1.5rem;border-color:rgba(255,255,255,.1)">
+        <div class="card-head">
+          <div class="card-title">＋ Nova Recompensa</div>
+          <div class="saved-pill" id="newRewardPill">✓ Criado!</div>
+        </div>
+        <div style="padding:1.4rem;display:grid;grid-template-columns:50px 1fr 1fr 110px auto;gap:.8rem;align-items:end;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Ícone</label><input class="sg-input" id="nr_icon" value="🎁" style="text-align:center;font-size:1.2rem;padding:.6rem .3rem"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Título</label><input class="sg-input" id="nr_title" placeholder="Ex: Corte Grátis"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Descrição</label><input class="sg-input" id="nr_desc" placeholder="Descrição da recompensa"/></div>
+          <div style="display:flex;flex-direction:column;gap:.4rem"><label class="sg-label">Custo (pts)</label><input class="sg-input" id="nr_cost" type="number" min="1" placeholder="300"/></div>
+          <button onclick="addReward()" style="background:var(--white);color:var(--black);border:none;padding:.72rem 1rem;font-weight:900;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap;height:fit-content" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">＋ Criar</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">🎁 Recompensas Disponíveis</div></div>
+        <div id="rewardsList" style="padding:.5rem 0"><div style="text-align:center;padding:2rem;color:var(--gray2)">Carregando...</div></div>
       </div>
     </div>
 
@@ -710,7 +816,7 @@ document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='
 function boot(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('adminPanel').style.display='block';
-  loadAll(); loadSettings(); loadServicesAdmin(); loadBarbersAdmin();
+  loadAll(); loadSettings(); loadServicesAdmin(); loadBarbersAdmin(); loadClientsAdmin(); loadChallengesAdmin(); loadRewardsAdmin();
   setInterval(loadAll,15000);
   setInterval(updateTime,1000);
 }
@@ -726,6 +832,9 @@ function logout(){
 const tabMeta = {
   dashboard:    ['Dashboard','Resumo e atividade do dia'],
   appointments: ['Agendamentos','Gerencie e atualize os agendamentos'],
+  clients:      ['Clientes','Veja perfis, histórico e pontos de fidelidade'],
+  loyalty:      ['Desafios & Níveis','Configure os desafios mensais do programa'],
+  rewardsmgr:   ['Recompensas','Gerencie as recompensas disponíveis para resgate'],
   barbers:      ['Barbeiros','Gerencie a equipe — ao vivo no site e no formulário de agendamento'],
   services:     ['Serviços & Preços','Edite nomes, valores e descrições — ao vivo no site'],
   settings:     ['Informações do Site','Edite e veja aplicado em tempo real'],
@@ -740,6 +849,9 @@ function switchTab(name, el){
   const [t,s] = tabMeta[name]||['—','—'];
   document.getElementById('pageTitle').textContent = t;
   document.getElementById('pageSub').textContent   = s;
+  if(name === 'clients')   loadClientsAdmin();
+  if(name === 'loyalty')   loadChallengesAdmin();
+  if(name === 'rewardsmgr') loadRewardsAdmin();
   if(name === 'services') loadServicesAdmin();
   if(name === 'barbers')  loadBarbersAdmin();
 }
@@ -865,6 +977,218 @@ async function saveSettings(){
     if(r.ok){pill.classList.add('show');setTimeout(()=>pill.classList.remove('show'),3500);showToast('⚡ Aplicado no site agora!');}
   }catch{showToast('Sem conexão (modo demo)');}
   btn.disabled=false; btn.textContent='Salvar e Aplicar';
+}
+
+// ══════════════════════════════════════
+// ── CLIENTES ──
+// ══════════════════════════════════════
+let clientsData = [];
+let editingClientId = null;
+
+async function loadClientsAdmin(){
+  try{
+    const r = await fetch(`${API}/api/clients`,{headers:{'x-admin-token':token}});
+    clientsData = await r.json();
+    renderClientsTable();
+    // Stats sidebar
+    document.getElementById('clientsBadge').textContent = clientsData.length;
+    document.getElementById('cliTotal').textContent  = clientsData.length;
+    document.getElementById('cliBronze').textContent = clientsData.filter(c=>c.level==='bronze').length;
+    document.getElementById('cliSilver').textContent = clientsData.filter(c=>c.level==='silver').length;
+    document.getElementById('cliGold').textContent   = clientsData.filter(c=>c.level==='gold').length;
+  }catch{}
+}
+
+function renderClientsTable(){
+  const tbody = document.getElementById('clientsBody');
+  if(!clientsData.length){ tbody.innerHTML='<tr><td colspan="7" class="table-empty">Ainda sem clientes registados</td></tr>'; return; }
+  const lvlIcons = {bronze:'🥉',silver:'🥈',gold:'🥇'};
+  const lvlColors = {bronze:'#cd7f32',silver:'#c0c0c0',gold:'#ffd700'};
+  tbody.innerHTML = clientsData.map(c=>`<tr>
+    <td><strong>${c.name}</strong></td>
+    <td>${c.phone}</td>
+    <td><span style="color:${lvlColors[c.level]};font-weight:700">${lvlIcons[c.level]} ${c.level.charAt(0).toUpperCase()+c.level.slice(1)}</span></td>
+    <td><strong>${c.points}</strong> pts</td>
+    <td>${c.totalVisits} visitas</td>
+    <td>${c.lastVisit ? new Date(c.lastVisit).toLocaleDateString('pt-PT') : '—'}</td>
+    <td><div class="acts">
+      <button class="act ok" onclick="openPointsModal('${c.id}')">✏ Pts</button>
+      <button class="act done" onclick="viewClientHistory('${c.id}')">📋</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function openPointsModal(id){
+  const c = clientsData.find(x=>x.id===id);
+  if(!c) return;
+  editingClientId = id;
+  document.getElementById('modalClientName').textContent = c.name;
+  document.getElementById('modalCurrentPts').value = c.points;
+  document.getElementById('modalDelta').value = '';
+  document.getElementById('modalReason').value = '';
+  document.getElementById('pointsModal').style.display='flex';
+}
+function closePointsModal(){ document.getElementById('pointsModal').style.display='none'; editingClientId=null; }
+
+async function submitPoints(){
+  const delta  = Number(document.getElementById('modalDelta').value);
+  const reason = document.getElementById('modalReason').value.trim();
+  if(!delta){ showToast('⚠ Introduz um valor de ajuste'); return; }
+  try{
+    const r = await fetch(`${API}/api/clients/${editingClientId}/points`,{
+      method:'POST', headers:{'Content-Type':'application/json','x-admin-token':token},
+      body:JSON.stringify({delta, reason: reason||'Ajuste manual'})
+    });
+    const d = await r.json();
+    if(r.ok){
+      const c = clientsData.find(x=>x.id===editingClientId);
+      if(c){ c.points=d.client.points; c.level=d.client.level; }
+      closePointsModal(); renderClientsTable();
+      showToast(`✅ Pontos actualizados: ${d.client.points} pts`);
+    }
+  }catch{ showToast('Erro ao actualizar pontos'); }
+}
+
+function viewClientHistory(id){
+  const c = clientsData.find(x=>x.id===id);
+  if(!c) return;
+  const hist = c.history.slice(0,8).map(h=>`• ${h.date} — ${h.service} (${h.points>0?'+':''}${h.points}pts)`).join('\n');
+  alert(`📋 Histórico de ${c.name}:\n\n${hist||'Sem histórico ainda.'}`);
+}
+
+// ══════════════════════════════════════
+// ── DESAFIOS ──
+// ══════════════════════════════════════
+let challengesAdminData = [];
+
+async function loadChallengesAdmin(){
+  try{
+    const r = await fetch(`${API}/api/challenges`);
+    challengesAdminData = await r.json();
+    renderChallengesList();
+  }catch{}
+}
+
+function renderChallengesList(){
+  const el = document.getElementById('challengesList');
+  if(!challengesAdminData.length){ el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray2)">Sem desafios criados</div>'; return; }
+  el.innerHTML=`
+    <div class="loyalty-row-header">
+      <span>Icon</span><span>Título</span><span>Descrição</span>
+      <span style="text-align:center">Objetivo</span><span style="text-align:center">Recompensa</span>
+      <span style="text-align:center">Status</span><span style="text-align:center">Ações</span>
+    </div>
+    ${challengesAdminData.map(c=>`
+    <div class="loyalty-row">
+      <div style="font-size:1.3rem;text-align:center">${c.icon}</div>
+      <input class="svc-inp" id="ch_title_${c.id}" value="${escAdmin(c.title)}"/>
+      <input class="svc-inp" id="ch_desc_${c.id}" value="${escAdmin(c.desc)}"/>
+      <input class="svc-inp svc-price-inp" id="ch_goal_${c.id}" type="number" min="1" value="${c.goal}"/>
+      <input class="svc-inp svc-price-inp" id="ch_reward_${c.id}" type="number" min="1" value="${c.reward}"/>
+      <button class="svc-toggle ${c.active?'on':'off'}" id="chtog-${c.id}" onclick="toggleChallenge('${c.id}')">
+        ${c.active?'● Activo':'○ Inactivo'}
+      </button>
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <button class="svc-save-btn" onclick="saveChallenge('${c.id}')">💾 Salvar</button>
+        <div class="svc-saved" id="chsaved-${c.id}">✓ Salvo!</div>
+        <button class="svc-del-btn" onclick="deleteChallenge('${c.id}')">🗑 Apagar</button>
+      </div>
+    </div>`).join('')}`;
+}
+
+function escAdmin(s){ return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;') }
+
+async function saveChallenge(id){
+  const payload={ title:document.getElementById(`ch_title_${id}`).value, desc:document.getElementById(`ch_desc_${id}`).value, goal:document.getElementById(`ch_goal_${id}`).value, reward:document.getElementById(`ch_reward_${id}`).value };
+  try{
+    const r=await fetch(`${API}/api/challenges/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','x-admin-token':token},body:JSON.stringify(payload)});
+    if(r.ok){const sv=document.getElementById(`chsaved-${id}`);sv.style.display='block';setTimeout(()=>sv.style.display='none',2500);showToast('✓ Desafio guardado!');}
+  }catch{showToast('Erro ao guardar');}
+}
+async function toggleChallenge(id){
+  const c=challengesAdminData.find(x=>x.id===id); if(!c)return;
+  const na=!(c.active!==false);
+  try{ await fetch(`${API}/api/challenges/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','x-admin-token':token},body:JSON.stringify({active:na})}); }catch{}
+  c.active=na;const btn=document.getElementById(`chtog-${id}`);btn.className=`svc-toggle ${na?'on':'off'}`;btn.textContent=na?'● Activo':'○ Inactivo';showToast(na?'✅ Desafio activado':'⏸ Desafio desactivado');
+}
+async function deleteChallenge(id){
+  const c=challengesAdminData.find(x=>x.id===id);if(!confirm(`Apagar "${c?.title}"?`))return;
+  try{ const r=await fetch(`${API}/api/challenges/${id}`,{method:'DELETE',headers:{'x-admin-token':token}});if(r.ok){challengesAdminData=challengesAdminData.filter(x=>x.id!==id);renderChallengesList();showToast('🗑 Desafio apagado');} }catch{showToast('Erro');}
+}
+async function addChallenge(){
+  const title=document.getElementById('nc_title').value.trim(),desc=document.getElementById('nc_desc').value.trim(),goal=document.getElementById('nc_goal').value,reward=document.getElementById('nc_reward').value,icon=document.getElementById('nc_icon').value.trim()||'🏆';
+  if(!title||!goal||!reward){showToast('⚠ Preenche título, objetivo e recompensa');return;}
+  try{
+    const r=await fetch(`${API}/api/challenges`,{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':token},body:JSON.stringify({title,desc,goal,reward,icon})});
+    const d=await r.json();
+    if(r.ok){challengesAdminData.push(d.challenge);renderChallengesList();['nc_title','nc_desc','nc_goal','nc_reward'].forEach(i=>document.getElementById(i).value='');document.getElementById('nc_icon').value='🏆';const p=document.getElementById('newChallengePill');p.classList.add('show');setTimeout(()=>p.classList.remove('show'),3000);showToast('✅ Desafio criado!');}
+  }catch{showToast('Erro ao criar');}
+}
+
+// ══════════════════════════════════════
+// ── RECOMPENSAS (ADMIN) ──
+// ══════════════════════════════════════
+let rewardsAdminData = [];
+
+async function loadRewardsAdmin(){
+  try{
+    const r=await fetch(`${API}/api/rewards`);
+    rewardsAdminData=await r.json();
+    renderRewardsList();
+  }catch{}
+}
+
+function renderRewardsList(){
+  const el=document.getElementById('rewardsList');
+  if(!rewardsAdminData.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gray2)">Sem recompensas criadas</div>';return;}
+  el.innerHTML=`
+    <div class="loyalty-row-header">
+      <span>Icon</span><span>Título</span><span>Descrição</span>
+      <span style="text-align:center">Custo pts</span><span></span>
+      <span style="text-align:center">Status</span><span style="text-align:center">Ações</span>
+    </div>
+    ${rewardsAdminData.map(r=>`
+    <div class="loyalty-row">
+      <div style="font-size:1.3rem;text-align:center">${r.icon}</div>
+      <input class="svc-inp" id="rw_title_${r.id}" value="${escAdmin(r.title)}"/>
+      <input class="svc-inp" id="rw_desc_${r.id}" value="${escAdmin(r.desc)}"/>
+      <input class="svc-inp svc-price-inp" id="rw_cost_${r.id}" type="number" min="1" value="${r.cost}"/>
+      <div></div>
+      <button class="svc-toggle ${r.active?'on':'off'}" id="rwtog-${r.id}" onclick="toggleReward('${r.id}')">
+        ${r.active?'● Activo':'○ Inactivo'}
+      </button>
+      <div style="display:flex;flex-direction:column;gap:.3rem">
+        <button class="svc-save-btn" onclick="saveReward('${r.id}')">💾 Salvar</button>
+        <div class="svc-saved" id="rwsaved-${r.id}">✓ Salvo!</div>
+        <button class="svc-del-btn" onclick="deleteReward('${r.id}')">🗑 Apagar</button>
+      </div>
+    </div>`).join('')}`;
+}
+
+async function saveReward(id){
+  const payload={title:document.getElementById(`rw_title_${id}`).value,desc:document.getElementById(`rw_desc_${id}`).value,cost:document.getElementById(`rw_cost_${id}`).value};
+  try{const r=await fetch(`${API}/api/rewards/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','x-admin-token':token},body:JSON.stringify(payload)});if(r.ok){const sv=document.getElementById(`rwsaved-${id}`);sv.style.display='block';setTimeout(()=>sv.style.display='none',2500);showToast('✓ Recompensa guardada!');}
+  }catch{showToast('Erro ao guardar');}
+}
+async function toggleReward(id){
+  const rw=rewardsAdminData.find(x=>x.id===id);if(!rw)return;
+  const na=!(rw.active!==false);
+  try{await fetch(`${API}/api/rewards/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','x-admin-token':token},body:JSON.stringify({active:na})});}catch{}
+  rw.active=na;const btn=document.getElementById(`rwtog-${id}`);btn.className=`svc-toggle ${na?'on':'off'}`;btn.textContent=na?'● Activo':'○ Inactivo';showToast(na?'✅ Activado':'⏸ Desactivado');
+}
+async function deleteReward(id){
+  const rw=rewardsAdminData.find(x=>x.id===id);if(!confirm(`Apagar "${rw?.title}"?`))return;
+  try{const r=await fetch(`${API}/api/rewards/${id}`,{method:'DELETE',headers:{'x-admin-token':token}});if(r.ok){rewardsAdminData=rewardsAdminData.filter(x=>x.id!==id);renderRewardsList();showToast('🗑 Recompensa apagada');}
+  }catch{showToast('Erro');}
+}
+async function addReward(){
+  const title=document.getElementById('nr_title').value.trim(),desc=document.getElementById('nr_desc').value.trim(),cost=document.getElementById('nr_cost').value,icon=document.getElementById('nr_icon').value.trim()||'🎁';
+  if(!title||!cost){showToast('⚠ Preenche título e custo');return;}
+  try{
+    const r=await fetch(`${API}/api/rewards`,{method:'POST',headers:{'Content-Type':'application/json','x-admin-token':token},body:JSON.stringify({title,desc,cost,icon})});
+    const d=await r.json();
+    if(r.ok){rewardsAdminData.push(d.reward);renderRewardsList();['nr_title','nr_desc','nr_cost'].forEach(i=>document.getElementById(i).value='');document.getElementById('nr_icon').value='🎁';const p=document.getElementById('newRewardPill');p.classList.add('show');setTimeout(()=>p.classList.remove('show'),3000);showToast('✅ Recompensa criada!');}
+  }catch{showToast('Erro ao criar');}
 }
 
 // ══════════════════════════════════════
